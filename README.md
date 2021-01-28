@@ -4,6 +4,10 @@ Final year project COMP3000, using Long Short Term Memory to predict future stoc
 The goal for this project is to allow users to upload files of stock market data, process that data through a model, 
 and produce both a graphical and numerical prediction for the stock values, time frame is to be determined.
 
+Must install python before doing imports.
+
+Required imports: matplotlib
+
 My contact details: jaime.kershawbrown@students.plymouth.ac.uk
 
 Supervisor: David Walker
