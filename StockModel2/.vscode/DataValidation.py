@@ -36,22 +36,35 @@ def ValidateData():
     
 #     return dataLength, trainingDataLength, training_set, test_set, sc
 
-def OrganiseTestingData(df, trainingDataLength, sc): 
+def OrganiseTestingData(df): 
+
+    storedTrainingSet = pd.read_csv('trainingData.txt', header = None)
+    trainingDataShape = storedTrainingSet.shape
+
+    sc = MinMaxScaler(feature_range = (0, 1))
+    trainingData = np.loadtxt("trainingData.txt").reshape(trainingDataShape[0], trainingDataShape[1])
+    sc.fit_transform(trainingData)
+    testingDataLength = math.floor(len(df.iloc[:, 1:2]))
+
+    tempVal1 = df.iloc[:10, 1:2]
+    tempVal2 = df.iloc[10:, 1:2]
+
 
     # Get length of data in file
-    dataLength = len(df.iloc[:, 1:2])
+    # dataLength = len(df.iloc[:, 1:2])
 
     dataSet = df.iloc[:, 1:2]
 
-    dataset_total = pd.concat((dataSet), axis = 0)
-    inputs = dataset_total[len(dataset_total) - 60:].values
+    dataset_total = pd.concat((tempVal1, tempVal2), axis = 0)
+    inputs = dataset_total.values
 
     inputs = inputs.reshape(-1, 1)
     inputs = sc.transform(inputs)
     x_test = []
-    for i in range(60, dataLength - trainingDataLength + 60):
+    for i in range(60, testingDataLength):
         x_test.append(inputs[i-60:i, 0])
     x_test = np.array(x_test)
+
     x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
 
     return x_test

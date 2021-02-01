@@ -1,0 +1,100 @@
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>Index</title>
+
+        <!-- <script src="index.js"></script> -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+        <script>    
+
+var obj_csv = {
+                  size:0,
+                  dataFile:[]
+              };
+
+              function readImage(input) {
+                // console.log(input)
+                if (input.files && input.files[0]) {
+                  //  console.log(input.files[0])
+                  
+
+                  let reader = new FileReader();
+                  reader.readAsBinaryString(input.files[0]);
+                  reader.onload = function (e) {
+                    // console.log(e);
+                    obj_csv.size = e.total;
+                    obj_csv.dataFile = e.target.result
+                    // console.log(obj_csv.dataFile)
+                    parseData(obj_csv.dataFile)          
+                  }
+                }
+              }
+
+              function parseData(data){
+                let csvData = [];
+                let lbreak = data.split("\n");
+                lbreak.forEach(res => {
+                   console.log((res.split(",")).length)
+                  if((res.split(",")).length == 7) {
+                    csvData.push(res.split(","));
+                  }
+                  
+                });
+                console.log(csvData)
+
+                localStorage.setItem("fileData", csvData);
+                // console.table(csvData);
+              }
+
+
+
+
+
+            $(document).ready(function(){
+
+             
+                $("#uploadData").click(function(){
+                 
+                  
+                  let stockFile = localStorage.getItem("fileData");
+
+                  console.log(typeof(stockFile))
+
+                  oneDArray = stockFile.split(",")
+                  console.log(typeof(oneDArray))
+
+                  var twoDArray = [], size = 7;
+                      
+                  while (oneDArray.length > 0)
+                    twoDArray.push(oneDArray.splice(0, size));
+                  
+                  console.log(twoDArray)
+
+                  stockData = twoDArray
+
+                  $.ajax({
+                    url:"/stockDataFile/"+stockData,
+                    success: function(message){
+                      console.log(message)
+                    }
+                  })
+                });
+            });
+        </script>
+
+    </head>
+
+    <body>
+        <h1 style="color: blue">Index</h1>
+        <p>This is an HTML file served up by Flask</p>
+        
+         
+        <input type="file" name="file" accept=".csv" id="stockData" onChange="readImage(this)">
+        <input type="submit" value="Upload" id="uploadData">
+         
+
+    </body>
+
+</html>

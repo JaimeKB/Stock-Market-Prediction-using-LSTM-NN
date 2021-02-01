@@ -47,6 +47,8 @@ def OrganiseTestingData(df, trainingDataLength, sc):
 
     dataset_total = pd.concat((dataset_train, dataset_test), axis = 0)
 
+    print(dataset_total.shape)
+
     # print("Dataset_total: " + str(dataset_total.shape))
 
     inputs = dataset_total[len(dataset_total) - len(dataset_test) - 60:].values
@@ -54,10 +56,14 @@ def OrganiseTestingData(df, trainingDataLength, sc):
 
     inputs = inputs.reshape(-1, 1)
     inputs = sc.transform(inputs)
+    print(inputs.shape)
     x_test = []
     for i in range(60, dataLength - trainingDataLength + 60):
         x_test.append(inputs[i-60:i, 0])
     x_test = np.array(x_test)
+
+    print(x_test.shape)
+
     x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
 
     # print("x_test shape: " + str(x_test.shape))
@@ -123,14 +129,16 @@ if __name__ == "__main__":
 
     trainingDataLength, training_set = OrganiseTrainingData(df)
 
-    f = open("trainingData.txt", "w")
-    for row in training_set:
-        np.savetxt(f, row)
+    # f = open("trainingData.txt", "w")
+    # for row in training_set:
+    #     np.savetxt(f, row)
+    # f.close()
 
-    f.close()
+    storedTrainingSet = pd.read_csv('trainingData.txt', header = None)
 
-    trainingDataShape = training_set.shape
-    
+
+    trainingDataShape = storedTrainingSet.shape
+
     model = load_model('Model_Test.h5')
     # Training function
     #model = TrainModel(trainingDataLength, training_set, sc)
@@ -147,6 +155,9 @@ if __name__ == "__main__":
     # predicted_stock_price = sc.inverse_transform(predicted_stock_price)
     predicted_stock_price = PredictData(model, x_test, sc)
     # Visualise the results
+
+    print(df.loc[trainingDataLength:, 'Date'])
+    print(predicted_stock_price.shape)
 
     plt.plot(df.loc[trainingDataLength:, 'Date'], dataset_test.values, color = 'red', label = 'Real TESLA Stock Price')
     plt.plot(df.loc[trainingDataLength:, 'Date'], predicted_stock_price, color = 'blue', label = 'Predicted TESLA Stock Price')
