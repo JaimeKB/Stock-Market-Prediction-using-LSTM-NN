@@ -29,6 +29,10 @@
                   dataFile:[]
               };
 
+              function readModel(input) {
+
+              }
+
               function readStockCSV(input) {
                 // console.log(input)
                 if (input.files && input.files[0]) {
@@ -134,8 +138,12 @@
         <p>This is an HTML file served up by Flask</p>
         
          
-        <input type="file" name="file" accept=".csv" id="stockData" value="Choose file" onChange="readStockCSV(this)">
-        <input type="submit" value="Upload" id="uploadData">
+        <input type="file" name="file" accept=".csv" id="stockData" value="Choose CSV data file" onChange="readStockCSV(this)">
+        <input type="submit" value="Upload CSV data" id="uploadData">
+
+        <input type="file" name="modelFile" accept=".csv" id="predictionModel" value="Choose model file" onChange="readModel(this)">
+        <input type="submit" value="Upload model" id="uploadModel">
+
         <div id="plotContainer" class="container">
             <canvas id="myChart" width="300" height="300"></canvas>
         </div>
