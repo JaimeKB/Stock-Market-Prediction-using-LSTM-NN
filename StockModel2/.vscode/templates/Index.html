@@ -4,17 +4,32 @@
         <meta charset="UTF-8">
         <title>Index</title>
 
+        <style>
+          /* #plotContainer {
+            width: 80%;
+            max-height: 300px;
+          } */
+
+          canvas{
+            /* width:1100px !important;
+            height:500px !important; */
+            width:1250px !important;
+            height:1000px !important;
+          }
+        </style>
+
+
         <!-- <script src="index.js"></script> -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
         <script>    
 
-var obj_csv = {
+              var obj_csv = {
                   size:0,
                   dataFile:[]
               };
 
-              function readImage(input) {
+              function readStockCSV(input) {
                 // console.log(input)
                 if (input.files && input.files[0]) {
                   //  console.log(input.files[0])
@@ -36,49 +51,77 @@ var obj_csv = {
                 let csvData = [];
                 let lbreak = data.split("\n");
                 lbreak.forEach(res => {
-                   console.log((res.split(",")).length)
+               
                   if((res.split(",")).length == 7) {
                     csvData.push(res.split(","));
                   }
                   
                 });
-                console.log(csvData)
-
                 localStorage.setItem("fileData", csvData);
-                // console.table(csvData);
               }
+            /////////////////////////////////////////////////////
 
+            function loadChart(xDatelabels, yStockData) {
 
+                let ctx = document.getElementById('myChart').getContext('2d');
+                // let xlabels = [];
+                let myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: xDatelabels,
+                        datasets: [{
+                            label: 'Stock price predictions',
+                            data: yStockData,
+                            fill: false,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                });
+            }
 
-
-
+            
+            /////////////////////////////////////////////////////
             $(document).ready(function(){
-
              
-                $("#uploadData").click(function(){
-                 
+                $("#uploadData").click(function(){           
                   
-                  let stockFile = localStorage.getItem("fileData");
+                  let stockFile = localStorage.getItem("fileData");          
 
-                  console.log(typeof(stockFile))
-
-                  oneDArray = stockFile.split(",")
-                  console.log(typeof(oneDArray))
+                  oneDArray = stockFile.split(",")          
 
                   var twoDArray = [], size = 7;
                       
                   while (oneDArray.length > 0)
-                    twoDArray.push(oneDArray.splice(0, size));
-                  
-                  console.log(twoDArray)
+                    twoDArray.push(oneDArray.splice(0, size));          
 
                   stockData = twoDArray
-
+                  console.log("Data sent!")
                   $.ajax({
                     url:"/stockDataFile/"+stockData,
-                    success: function(message){
-                      console.log(message)
-                    }
+                    // success: function(message, predictedData, testData, dateRange, dataLength){
+                      success: function(dataDict){
+
+                        message = dataDict['message']
+                        predictedData = dataDict['predictedData']
+                        testData = dataDict['testData']
+                        dateRange = dataDict['dateRange']
+                        dataLength = dataDict['dataLength']
+
+                        console.log(message);
+                        console.log(predictedData[0][0])
+                        console.log(dateRange[0])
+
+                        chartData = []
+
+                        for (i = 0; i < predictedData.length; i++) {
+                          chartData.push(predictedData[i][0])
+                        }
+
+                        loadChart(dateRange.slice(0, 150), chartData.slice(0, 150))
+
+                      }
                   })
                 });
             });
@@ -91,9 +134,11 @@ var obj_csv = {
         <p>This is an HTML file served up by Flask</p>
         
          
-        <input type="file" name="file" accept=".csv" id="stockData" onChange="readImage(this)">
+        <input type="file" name="file" accept=".csv" id="stockData" value="Choose file" onChange="readStockCSV(this)">
         <input type="submit" value="Upload" id="uploadData">
-         
+        <div id="plotContainer" class="container">
+            <canvas id="myChart" width="300" height="300"></canvas>
+        </div>
 
     </body>
 
