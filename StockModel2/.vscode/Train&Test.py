@@ -15,10 +15,17 @@ from sklearn.model_selection import train_test_split
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.models import load_model
 
+import pickle
+import tensorflowjs as tfjs
+
 # from DataValidation import OrganiseTrainingData
 # from CreateModel import TrainModel
 # from DataValidation import OrganiseTestingData
 # from TestModel import PredictData
+
+
+ 
+
 
 
 def OrganiseTrainingData(df): 
@@ -66,7 +73,7 @@ def OrganiseTestingData(df, trainingDataLength, sc):
 
     x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
 
-    # print("x_test shape: " + str(x_test.shape))
+    print("x_test  " + x_test)
 
     # print(len(x_test))
     return x_test, dataset_test
@@ -111,6 +118,11 @@ def TrainModel(trainingDataLength, training_set, sc):
     model.fit(x_train, y_train, epochs = 5, batch_size = 32) # changing epochs from 100 to 5 for coding purposes
 
     model.save('Model_Test.h5')  # creates a HDF5 file 'my_model.h5'
+
+    # tfjs.converters.save_keras_model(model, "C:/Users/Jaime Kershaw Brown/Documents/Final year project/")
+
+
+
     return model
 
 def PredictData(model, x_test, sc): 

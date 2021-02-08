@@ -4,10 +4,14 @@ import matplotlib.pyplot as plt
 from flask import Flask
 from flask import render_template
 from flask import jsonify
+from flask import request
 from pandas import DataFrame
 from DataValidation import OrganiseTestingData
 from TestModel import PredictData
+from TestModel import TestUserModel
 import numpy as np
+import pandas as pd
+import os
 # import json
 
 app = Flask(__name__)
@@ -19,6 +23,22 @@ def to_matrix(l):
 def hello():
     return render_template('Index.html')
 
+@app.route('/uploadajax', methods = ['POST'])
+def upldfile():
+    if request.method == 'POST':
+        uploaded_file = request.files['file']
+        if uploaded_file.filename != '':
+            uploaded_file.save(os.path.join('userModels', "userModel.h5"))
+            predictedData, dateRange = TestUserModel()
+
+            testDict = {
+                "predictedData": predictedData.tolist(),
+                "dateRange": dateRange.tolist(),
+            }
+
+            return jsonify(testDict)
+
+    return("Success")
 
 @app.route('/stockDataFile/<stockData>',methods=['GET'])
 def ProcessStockData(stockData):

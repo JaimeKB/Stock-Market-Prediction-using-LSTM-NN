@@ -22,18 +22,15 @@
         <!-- <script src="index.js"></script> -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
-        <script>    
 
+        <script>    
+             
               var obj_csv = {
                   size:0,
                   dataFile:[]
               };
 
-              function readModel(input) {
-
-              }
-
-              function readStockCSV(input) {
+              function readImage(input) {
                 // console.log(input)
                 if (input.files && input.files[0]) {
                   //  console.log(input.files[0])
@@ -62,8 +59,8 @@
                   
                 });
                 localStorage.setItem("fileData", csvData);
+
               }
-            /////////////////////////////////////////////////////
 
             function loadChart(xDatelabels, yStockData) {
 
@@ -86,9 +83,8 @@
             }
 
             
-            /////////////////////////////////////////////////////
             $(document).ready(function(){
-             
+
                 $("#uploadData").click(function(){           
                   
                   let stockFile = localStorage.getItem("fileData");          
@@ -128,6 +124,37 @@
                       }
                   })
                 });
+
+                ////////// Test functions below
+
+                $('#upload-h5-file-btn').click(function() {
+                  var form_data = new FormData($('#upload-file')[0]);
+                  $.ajax({
+                      type: 'POST',
+                      url: '/uploadajax',
+                      data: form_data,
+                      contentType: false,
+                      cache: false,
+                      processData: false,
+                      success: function(dataDict) {
+                          console.log('Success!');
+
+                          predictedData = dataDict['predictedData']
+                          dateRange = dataDict['dateRange']
+
+                          chartData = []
+
+                          for (i = 0; i < predictedData.length; i++) {
+                            chartData.push(predictedData[i][0])
+                          }
+
+                          loadChart(dateRange.slice(0, 150), chartData.slice(0, 150))
+                      },
+                  });
+                });
+
+
+
             });
         </script>
 
@@ -138,11 +165,23 @@
         <p>This is an HTML file served up by Flask</p>
         
          
-        <input type="file" name="file" accept=".csv" id="stockData" value="Choose CSV data file" onChange="readStockCSV(this)">
+        <input type="file" name="file" accept=".csv" id="stockData"  onChange="readImage(this)">
         <input type="submit" value="Upload CSV data" id="uploadData">
 
-        <input type="file" name="modelFile" accept=".csv" id="predictionModel" value="Choose model file" onChange="readModel(this)">
-        <input type="submit" value="Upload model" id="uploadModel">
+        <!-- <input type="file" name="modelFile" accept=".h5" id="predictionModel" value="Choose model file" onChange="readModel(this)">
+        <input type="submit" value="Upload model" id="uploadModel"> -->
+
+        <form id="upload-file" method="post" enctype="multipart/form-data">
+          <fieldset>
+              <label for="file">Select a file</label>
+              <input name="file" type="file">
+          </fieldset>
+          <fieldset>
+              <button id="upload-h5-file-btn" type="button">Upload</button>
+          </fieldset>
+        </form>
+
+
 
         <div id="plotContainer" class="container">
             <canvas id="myChart" width="300" height="300"></canvas>
