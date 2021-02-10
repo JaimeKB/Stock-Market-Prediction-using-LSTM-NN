@@ -17,24 +17,6 @@ from tensorflow.keras.callbacks import EarlyStopping
 def ValidateData():
     pass
 
-# def OrganiseTrainingData(df): 
-#     #split data
-#     dataLength = len(df.iloc[:, 1:2])
-
-#     trainingDataLength = math.floor(len(df.iloc[:, 1:2])*0.7)
-
-#     training_set = df.iloc[:trainingDataLength, 1:2].values
-#     # 881
-#     test_set = df.iloc[trainingDataLength:, 1:2].values
-#     # 387
-
-#     print("Traing length: " + str(len(training_set)))
-#     print("test length: " + str(len(test_set)))
-
-#     # Scale/normalise data
-#     sc = MinMaxScaler(feature_range = (0, 1))
-    
-#     return dataLength, trainingDataLength, training_set, test_set, sc
 
 def OrganiseTestingData(df): 
 
@@ -48,10 +30,6 @@ def OrganiseTestingData(df):
 
     tempVal1 = df.iloc[:10, 1:2]
     tempVal2 = df.iloc[10:, 1:2]
-
-
-    # Get length of data in file
-    # dataLength = len(df.iloc[:, 1:2])
 
     dataSet = df.iloc[:, 1:2]
 

@@ -9,10 +9,10 @@ from pandas import DataFrame
 from DataValidation import OrganiseTestingData
 from TestModel import PredictData
 from TestModel import TestUserModel
+from TestModel import RunOwn
 import numpy as np
 import pandas as pd
 import os
-# import json
 
 app = Flask(__name__)
 
@@ -31,9 +31,12 @@ def upldfile():
             uploaded_file.save(os.path.join('userModels', "userModel.h5"))
             predictedData, dateRange = TestUserModel()
 
+            myModelPredictedData = RunOwn()
+
             testDict = {
                 "predictedData": predictedData.tolist(),
-                "dateRange": dateRange.tolist(),
+                "myModelPredictedData": myModelPredictedData.tolist(),
+                "dateRange": dateRange.tolist()
             }
 
             return jsonify(testDict)
@@ -51,18 +54,6 @@ def ProcessStockData(stockData):
     testData = OrganiseTestingData(df)
     predictedData = PredictData(testData)
 
-    # create_figure(testData, predictedData)
-
-    # plt.plot(df.loc[60:, 'Date'], predictedData, color = 'blue', label = 'Predicted TESLA Stock Price')
-    # plt.xticks(np.arange(0, len(testData), 50))
-    # plt.title('TESLA Stock Price Prediction')
-    # plt.xlabel('Time')
-    # plt.ylabel('TESLA Stock Price')
-    # plt.legend()
-    # plt.show()
-    # plt.clf()
-# , predictedData, testData, df.loc[60:, 'Date'], len(testData)
-
     dateRange = df.loc[60:, 'Date']
 
     testDict = {
@@ -79,5 +70,3 @@ def ProcessStockData(stockData):
 
 if __name__ == "__main__":
     app.run()
-
-#C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\Python37_64\\python.exe

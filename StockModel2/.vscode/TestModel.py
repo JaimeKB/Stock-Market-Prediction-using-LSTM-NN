@@ -47,3 +47,22 @@ def TestUserModel():
     predicted_stock_price = sc.inverse_transform(predicted_stock_price)
     
     return predicted_stock_price, dateRange
+
+
+def RunOwn():
+
+    model = load_model('Model_Test.h5')
+
+    df=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/TeslaTestData.csv")
+    x_test = OrganiseTestingData(df)
+
+    sc = MinMaxScaler(feature_range = (0, 1))
+    storedTrainingSet = pd.read_csv('trainingData.txt', header = None)
+    trainingDataShape = storedTrainingSet.shape
+    trainingData = np.loadtxt("trainingData.txt").reshape(trainingDataShape[0], trainingDataShape[1])
+    sc.fit_transform(trainingData)
+
+    predicted_stock_price = model.predict(x_test)
+    predicted_stock_price = sc.inverse_transform(predicted_stock_price)
+    
+    return predicted_stock_price

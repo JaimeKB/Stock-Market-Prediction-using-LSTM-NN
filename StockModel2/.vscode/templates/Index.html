@@ -18,8 +18,6 @@
           }
         </style>
 
-
-        <!-- <script src="index.js"></script> -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
 
@@ -31,18 +29,13 @@
               };
 
               function readImage(input) {
-                // console.log(input)
-                if (input.files && input.files[0]) {
-                  //  console.log(input.files[0])
-                  
+                if (input.files && input.files[0]) {               
 
                   let reader = new FileReader();
                   reader.readAsBinaryString(input.files[0]);
                   reader.onload = function (e) {
-                    // console.log(e);
                     obj_csv.size = e.total;
                     obj_csv.dataFile = e.target.result
-                    // console.log(obj_csv.dataFile)
                     parseData(obj_csv.dataFile)          
                   }
                 }
@@ -65,7 +58,6 @@
             function loadChart(xDatelabels, yStockData) {
 
                 let ctx = document.getElementById('myChart').getContext('2d');
-                // let xlabels = [];
                 let myChart = new Chart(ctx, {
                     type: 'line',
                     data: {
@@ -82,17 +74,42 @@
                 });
             }
 
-            
+            function load2Charts(xDatelabels, yStockData1, yStockData2) {
+
+              let ctx = document.getElementById('myChart').getContext('2d');
+                let myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: xDatelabels,
+                        datasets: [
+                          {
+                            label: "User's model Stock price predictions",
+                            data: yStockData1,
+                            fill: false,
+                            backgroundColor: 'rgba(222, 17, 2, 0.2)',
+                            borderColor: 'rgba(222, 17, 2, 1)',
+                            borderWidth: 1
+                          },
+                          {
+                            label: "Software's model Stock price predictions",
+                            data: yStockData2,
+                            fill: false,
+                            backgroundColor: 'rgba(45, 5, 227, 0.2)',
+                            borderColor: 'rgba(45, 5, 227, 1)',
+                            borderWidth: 1
+                          }
+                      ]
+                    },
+                });
+            }
+
             $(document).ready(function(){
 
                 $("#uploadData").click(function(){           
                   
                   let stockFile = localStorage.getItem("fileData");          
-
                   oneDArray = stockFile.split(",")          
-
-                  var twoDArray = [], size = 7;
-                      
+                  var twoDArray = [], size = 7;               
                   while (oneDArray.length > 0)
                     twoDArray.push(oneDArray.splice(0, size));          
 
@@ -100,7 +117,6 @@
                   console.log("Data sent!")
                   $.ajax({
                     url:"/stockDataFile/"+stockData,
-                    // success: function(message, predictedData, testData, dateRange, dataLength){
                       success: function(dataDict){
 
                         message = dataDict['message']
@@ -120,12 +136,9 @@
                         }
 
                         loadChart(dateRange.slice(0, 150), chartData.slice(0, 150))
-
                       }
                   })
                 });
-
-                ////////// Test functions below
 
                 $('#upload-h5-file-btn').click(function() {
                   var form_data = new FormData($('#upload-file')[0]);
@@ -140,21 +153,21 @@
                           console.log('Success!');
 
                           predictedData = dataDict['predictedData']
+                          myModelPredictedData = dataDict['myModelPredictedData']
                           dateRange = dataDict['dateRange']
 
-                          chartData = []
+                          chartData1 = []
+                          chartData2 = []
 
                           for (i = 0; i < predictedData.length; i++) {
-                            chartData.push(predictedData[i][0])
+                            chartData1.push(predictedData[i][0])
+                            chartData2.push(myModelPredictedData[i][0])
                           }
 
-                          loadChart(dateRange.slice(0, 150), chartData.slice(0, 150))
+                          load2Charts(dateRange.slice(0, 150), chartData1.slice(0, 150), chartData2.slice(0, 150))
                       },
                   });
                 });
-
-
-
             });
         </script>
 
@@ -164,12 +177,8 @@
         <h1 style="color: blue">Index</h1>
         <p>This is an HTML file served up by Flask</p>
         
-         
         <input type="file" name="file" accept=".csv" id="stockData"  onChange="readImage(this)">
         <input type="submit" value="Upload CSV data" id="uploadData">
-
-        <!-- <input type="file" name="modelFile" accept=".h5" id="predictionModel" value="Choose model file" onChange="readModel(this)">
-        <input type="submit" value="Upload model" id="uploadModel"> -->
 
         <form id="upload-file" method="post" enctype="multipart/form-data">
           <fieldset>
@@ -180,8 +189,6 @@
               <button id="upload-h5-file-btn" type="button">Upload</button>
           </fieldset>
         </form>
-
-
 
         <div id="plotContainer" class="container">
             <canvas id="myChart" width="300" height="300"></canvas>

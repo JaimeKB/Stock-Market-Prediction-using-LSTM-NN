@@ -18,16 +18,6 @@ from tensorflow.keras.models import load_model
 import pickle
 import tensorflowjs as tfjs
 
-# from DataValidation import OrganiseTrainingData
-# from CreateModel import TrainModel
-# from DataValidation import OrganiseTestingData
-# from TestModel import PredictData
-
-
- 
-
-
-
 def OrganiseTrainingData(df): 
     #split data
     
@@ -73,8 +63,6 @@ def OrganiseTestingData(df, trainingDataLength, sc):
 
     x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
 
-    print("x_test  " + x_test)
-
     # print(len(x_test))
     return x_test, dataset_test
 
@@ -115,7 +103,7 @@ def TrainModel(trainingDataLength, training_set, sc):
     model.add(Dense(units = 1))
     # Compile and fit model to training dataset
     model.compile(optimizer = 'adam', loss= 'mean_squared_error')
-    model.fit(x_train, y_train, epochs = 5, batch_size = 32) # changing epochs from 100 to 5 for coding purposes
+    model.fit(x_train, y_train, epochs = 100, batch_size = 32) # changing epochs from 100 to 5 for coding purposes
 
     model.save('Model_Test.h5')  # creates a HDF5 file 'my_model.h5'
 
@@ -151,9 +139,9 @@ if __name__ == "__main__":
 
     trainingDataShape = storedTrainingSet.shape
 
-    model = load_model('Model_Test.h5')
+    #model = load_model('Model_Test.h5')
     # Training function
-    #model = TrainModel(trainingDataLength, training_set, sc)
+    model = TrainModel(trainingDataLength, training_set, sc)
     
     trainingData = np.loadtxt("trainingData.txt").reshape(trainingDataShape[0], trainingDataShape[1])
 
