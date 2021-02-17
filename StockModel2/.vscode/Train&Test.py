@@ -103,13 +103,9 @@ def TrainModel(trainingDataLength, training_set, sc):
     model.add(Dense(units = 1))
     # Compile and fit model to training dataset
     model.compile(optimizer = 'adam', loss= 'mean_squared_error')
-    model.fit(x_train, y_train, epochs = 100, batch_size = 32) # changing epochs from 100 to 5 for coding purposes
+    model.fit(x_train, y_train, epochs = 100, batch_size = 32)
 
     model.save('Model_Test.h5')  # creates a HDF5 file 'my_model.h5'
-
-    # tfjs.converters.save_keras_model(model, "C:/Users/Jaime Kershaw Brown/Documents/Final year project/")
-
-
 
     return model
 

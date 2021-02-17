@@ -57,25 +57,24 @@
 
             function loadChart(xDatelabels, yStockData) {
 
-                let ctx = document.getElementById('myChart').getContext('2d');
-                let myChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: xDatelabels,
-                        datasets: [{
-                            label: 'Stock price predictions',
-                            data: yStockData,
-                            fill: false,
-                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                });
+              let ctx = document.getElementById('myChart').getContext('2d');
+              let myChart = new Chart(ctx, {
+                  type: 'line',
+                  data: {
+                      labels: xDatelabels,
+                      datasets: [{
+                          label: 'Stock price predictions',
+                          data: yStockData,
+                          fill: false,
+                          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                          borderColor: 'rgba(255, 99, 132, 1)',
+                          borderWidth: 1
+                      }]
+                  },
+              });
             }
 
             function load2Charts(xDatelabels, yStockData1, yStockData2) {
-
               let ctx = document.getElementById('myChart').getContext('2d');
                 let myChart = new Chart(ctx, {
                     type: 'line',
@@ -105,39 +104,66 @@
 
             $(document).ready(function(){
 
-                $("#uploadData").click(function(){           
+                // $("#uploadData").click(function(){           
                   
-                  let stockFile = localStorage.getItem("fileData");          
-                  oneDArray = stockFile.split(",")          
-                  var twoDArray = [], size = 7;               
-                  while (oneDArray.length > 0)
-                    twoDArray.push(oneDArray.splice(0, size));          
+                //   let stockFile = localStorage.getItem("fileData");          
+                //   oneDArray = stockFile.split(",")          
+                //   var twoDArray = [], size = 7;               
+                //   while (oneDArray.length > 0)
+                //     twoDArray.push(oneDArray.splice(0, size));          
 
-                  stockData = twoDArray
-                  console.log("Data sent!")
+                //   stockData = twoDArray
+                //   console.log("Data sent!")
+                //   $.ajax({
+                //     url:"/stockDataFile/"+stockData,
+                //       success: function(dataDict){
+
+                //         message = dataDict['message']
+                //         predictedData = dataDict['predictedData']
+                //         testData = dataDict['testData']
+                //         dateRange = dataDict['dateRange']
+                //         dataLength = dataDict['dataLength']
+
+                //         console.log(message);
+                //         console.log(predictedData[0][0])
+                //         console.log(dateRange[0])
+
+                //         chartData = []
+
+                //         for (i = 0; i < predictedData.length; i++) {
+                //           chartData.push(predictedData[i][0])
+                //         }
+
+                //         loadChart(dateRange.slice(0, 150), chartData.slice(0, 150))
+                //       }
+                //   })
+                // });
+
+                $('#upload-CSV-file-btn').click(function() {
+                  var form_data = new FormData($('#upload-csv')[0]);
                   $.ajax({
-                    url:"/stockDataFile/"+stockData,
-                      success: function(dataDict){
+                      type: 'POST',
+                      url: '/uploadCSV',
+                      data: form_data,
+                      contentType: false,
+                      cache: false,
+                      processData: false,
+                      success: function(dataDict) {
+                          message = dataDict['message']
+                          predictedData = dataDict['predictedData']
+                          testData = dataDict['testData']
+                          dateRange = dataDict['dateRange']
+                          dataLength = dataDict['dataLength']                      
 
-                        message = dataDict['message']
-                        predictedData = dataDict['predictedData']
-                        testData = dataDict['testData']
-                        dateRange = dataDict['dateRange']
-                        dataLength = dataDict['dataLength']
+                          chartData = []
 
-                        console.log(message);
-                        console.log(predictedData[0][0])
-                        console.log(dateRange[0])
+                          for (i = 0; i < predictedData.length; i++) {
+                            chartData.push(predictedData[i][0])
+                          }
 
-                        chartData = []
-
-                        for (i = 0; i < predictedData.length; i++) {
-                          chartData.push(predictedData[i][0])
-                        }
-
-                        loadChart(dateRange.slice(0, 150), chartData.slice(0, 150))
-                      }
-                  })
+                          loadChart(dateRange.slice(0, 150), chartData.slice(0, 150))
+                      },
+                  });
                 });
 
                 $('#upload-h5-file-btn').click(function() {
@@ -177,12 +203,23 @@
         <h1 style="color: blue">Index</h1>
         <p>This is an HTML file served up by Flask</p>
         
-        <input type="file" name="file" accept=".csv" id="stockData"  onChange="readImage(this)">
-        <input type="submit" value="Upload CSV data" id="uploadData">
+        <!-- <input type="file" name="file" accept=".csv" id="stockData"  onChange="readImage(this)">
+        <input type="submit" value="Upload CSV data" id="uploadData"> -->
+
+
+        <form id="upload-csv" method="post" enctype="multipart/form-data">
+          <fieldset>
+              <label for="file">Select a CSV file</label>
+              <input name="CSVfile" type="file">
+          </fieldset>
+          <fieldset>
+              <button id="upload-CSV-file-btn" type="button">Upload</button>
+          </fieldset>
+        </form>
 
         <form id="upload-file" method="post" enctype="multipart/form-data">
           <fieldset>
-              <label for="file">Select a file</label>
+              <label for="file">Select a h5 file</label>
               <input name="file" type="file">
           </fieldset>
           <fieldset>

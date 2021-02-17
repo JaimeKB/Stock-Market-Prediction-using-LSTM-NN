@@ -7,6 +7,7 @@ from flask import jsonify
 from flask import request
 from pandas import DataFrame
 from DataValidation import OrganiseTestingData
+from DataValidation import ValidateYahooCSVData
 from TestModel import PredictData
 from TestModel import TestUserModel
 from TestModel import RunOwn
@@ -43,28 +44,62 @@ def upldfile():
 
     return("Success")
 
-@app.route('/stockDataFile/<stockData>',methods=['GET'])
-def ProcessStockData(stockData):
-    print("Stock data recieved:")
-    stockData = stockData.split(",")
-    twoDStockData = to_matrix(stockData)
-    twoDStockData.pop(0)
-    df = DataFrame (twoDStockData,columns=['Date','Open','High','Low','Close','Adj Close','Volume'])
 
-    testData = OrganiseTestingData(df)
-    predictedData = PredictData(testData)
+@app.route('/uploadCSV', methods = ['POST'])
+def uploadCSVFile():
+    if request.method == 'POST':
+        uploaded_file = request.files['CSVfile']
+        if uploaded_file.filename != '':
+            uploaded_file.save(os.path.join('userCSVFiles', "userCSV.csv"))
 
-    dateRange = df.loc[60:, 'Date']
+            result, length = ValidateYahooCSVData("C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/userCSVFiles", "userCSV.csv")
 
-    testDict = {
-        "message": "Data was received!",
-        "predictedData": predictedData.tolist(),
-        "testData": testData.tolist(),
-        "dateRange": dateRange.tolist(),
-        "dataLength": len(testData)
-    }
+            if(result == "Pass"):
 
-    return jsonify(testDict)
+                df=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/userCSVFiles/userCSV.csv")
+                testData = OrganiseTestingData(df)
+                predictedData = PredictData(testData)
+
+                dateRange = df.loc[60:, 'Date']
+
+                testDict = {
+                    "message": "Data was received!",
+                    "predictedData": predictedData.tolist(),
+                    "testData": testData.tolist(),
+                    "dateRange": dateRange.tolist(),
+                    "dataLength": len(testData)
+                }
+
+                return jsonify(testDict)
+
+            else:
+                return("Uploaded file was unusable!")
+
+    return("Success")
+
+
+# @app.route('/stockDataFile/<stockData>',methods=['GET'])
+# def ProcessStockData(stockData):
+#     print("Stock data recieved:")
+#     stockData = stockData.split(",")
+#     twoDStockData = to_matrix(stockData)
+#     twoDStockData.pop(0)
+#     df = DataFrame (twoDStockData,columns=['Date','Open','High','Low','Close','Adj Close','Volume'])
+
+#     testData = OrganiseTestingData(df)
+#     predictedData = PredictData(testData)
+
+#     dateRange = df.loc[60:, 'Date']
+
+#     testDict = {
+#         "message": "Data was received!",
+#         "predictedData": predictedData.tolist(),
+#         "testData": testData.tolist(),
+#         "dateRange": dateRange.tolist(),
+#         "dataLength": len(testData)
+#     }
+
+#     return jsonify(testDict)
 
 
 
