@@ -24,6 +24,10 @@ def to_matrix(l):
 def hello():
     return render_template('Index.html')
 
+@app.route("/TermsOfService")
+def Redirect():
+    return render_template('TermsOfService.html')
+
 @app.route('/uploadajax', methods = ['POST'])
 def upldfile():
     if request.method == 'POST':
@@ -78,6 +82,8 @@ def uploadCSVFile():
     return("Success")
 
 
+
+
 # @app.route('/stockDataFile/<stockData>',methods=['GET'])
 # def ProcessStockData(stockData):
 #     print("Stock data recieved:")
@@ -100,7 +106,6 @@ def uploadCSVFile():
 #     }
 
 #     return jsonify(testDict)
-
 
 
 if __name__ == "__main__":
