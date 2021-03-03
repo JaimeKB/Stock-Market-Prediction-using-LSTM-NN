@@ -14,10 +14,20 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.models import load_model
+import os
 
-import pickle
-import tensorflowjs as tfjs
-
+# def MultiFileReading():
+#     filePath = "C:/Users/Jaime Kershaw Brown/Documents/Final year project/trainingStocks"
+#     data = []
+    
+#     directory = os.fsencode(filePath)
+#     for file in os.listdir(directory):
+#         filename = os.fsdecode(file)
+#         if filename.endswith(".csv"): 
+#             print(filename)
+#             df=pd.read_csv(filePath+"/"+filename, sep=",")
+#             data = df.iloc[:]
+               
 def OrganiseTrainingData(df): 
     #split data
     
@@ -55,16 +65,21 @@ def OrganiseTestingData(df, trainingDataLength, sc):
     inputs = sc.transform(inputs)
     print(inputs.shape)
     x_test = []
+    y_test = []
+
     for i in range(60, dataLength - trainingDataLength + 60):
         x_test.append(inputs[i-60:i, 0])
+        y_test.append(inputs[i, 0])
+
     x_test = np.array(x_test)
+    y_test = np.array(y_test)
 
     print(x_test.shape)
 
     x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
 
     # print(len(x_test))
-    return x_test, dataset_test
+    return x_test, dataset_test, y_test
 
 
 def TrainModel(trainingDataLength, training_set, sc): 
@@ -88,37 +103,47 @@ def TrainModel(trainingDataLength, training_set, sc):
 
     model = Sequential()
     # Layer 1
-    model.add(LSTM(units = 50, return_sequences = True, input_shape = (x_train.shape[1], 1)))
+    model.add(LSTM(units = 60, return_sequences = True, input_shape = (x_train.shape[1], 1)))
     model.add(Dropout(0.2))
     # Layer 2
-    model.add(LSTM(units = 50, return_sequences = True))
+    model.add(LSTM(units = 60, return_sequences = True))
     model.add(Dropout(0.2))
     # Layer 3
-    model.add(LSTM(units = 50, return_sequences = True))
+    model.add(LSTM(units = 60, return_sequences = True))
     model.add(Dropout(0.2))
     # Layer 4
-    model.add(LSTM(units = 50))
+    model.add(LSTM(units = 60))
     model.add(Dropout(0.2))
     # Output layer
     model.add(Dense(units = 1))
     # Compile and fit model to training dataset
     model.compile(optimizer = 'adam', loss= 'mean_squared_error')
     model.fit(x_train, y_train, epochs = 100, batch_size = 32)
-
     model.save('Model_Test.h5')  # creates a HDF5 file 'my_model.h5'
 
     return model
 
-def PredictData(model, x_test, sc): 
+def PredictData(model, x_test, y_test, sc): 
     predicted_stock_price = model.predict(x_test)
     predicted_stock_price = sc.inverse_transform(predicted_stock_price)
     
+    # print(type(x_test))
+    # print(x_test.shape)
+    # print(type(predicted_stock_price))
+    # print(predicted_stock_price.shape)
+
+    # MSE_error = mean_squared_error(x_test, predicted_stock_price)
+    # print('Testing Mean Squared Error is {}'.format(MSE_error))
+    # score = model.evaluate(x_test, y_test, batch_size=32)
+    # print("Score:")
+    # print(score)
+
     return predicted_stock_price
 
 
 if __name__ == "__main__":
 
-    df=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/TSLA.csv")
+    df=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/TSLA_TEMP.csv")
 
     # Scale/normalise data
     sc = MinMaxScaler(feature_range = (0, 1))
@@ -144,23 +169,22 @@ if __name__ == "__main__":
     sc.fit_transform(trainingData)
     
     # Prepare testing data Function
-    x_test, dataset_test = OrganiseTestingData(df, trainingDataLength, sc)
+    x_test, dataset_test, y_test = OrganiseTestingData(df, trainingDataLength, sc)
 
     # Predicted data
     # predicted_stock_price = model.predict(x_test)
     # predicted_stock_price = sc.inverse_transform(predicted_stock_price)
-    predicted_stock_price = PredictData(model, x_test, sc)
+    predicted_stock_price = PredictData(model, x_test, y_test, sc)
     # Visualise the results
 
     print(df.loc[trainingDataLength:, 'Date'])
     print(predicted_stock_price.shape)
 
-    plt.plot(df.loc[trainingDataLength:, 'Date'], dataset_test.values, color = 'red', label = 'Real TESLA Stock Price')
-    plt.plot(df.loc[trainingDataLength:, 'Date'], predicted_stock_price, color = 'blue', label = 'Predicted TESLA Stock Price')
-    plt.xticks(np.arange(0, len(x_test), 50))
-    plt.title('TESLA Stock Price Prediction')
+    plt.plot(df.loc[trainingDataLength:, 'Date'], dataset_test.values, color = 'red', label = 'Actual Stock Price')
+    plt.plot(df.loc[trainingDataLength:, 'Date'], predicted_stock_price, color = 'blue', label = 'Predicted Stock Price')
+    plt.xticks(np.arange(0, len(x_test), 100))
+    plt.title('Stock Price Prediction')
     plt.xlabel('Time')
-    plt.ylabel('TESLA Stock Price')
+    plt.ylabel('Stock Price')
     plt.legend()
     plt.show()
-

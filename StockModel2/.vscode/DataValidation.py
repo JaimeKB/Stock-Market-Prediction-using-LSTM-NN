@@ -145,8 +145,6 @@ def LoopThroughFiles():
 
     StartTime = now.strftime("%H:%M:%S")
 
- 
-
     directory = os.fsencode(filePath)
     for file in os.listdir(directory):
         filename = os.fsdecode(file)
