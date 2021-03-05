@@ -119,7 +119,7 @@ def TrainModel(trainingDataLength, training_set, sc):
     # Compile and fit model to training dataset
     model.compile(optimizer = 'adam', loss= 'mean_squared_error')
     model.fit(x_train, y_train, epochs = 100, batch_size = 32)
-    model.save('Model_Test.h5')  # creates a HDF5 file 'my_model.h5'
+    model.save('C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/Model_Test.h5')  # creates a HDF5 file 'my_model.h5'
 
     return model
 
@@ -155,7 +155,7 @@ if __name__ == "__main__":
     #     np.savetxt(f, row)
     # f.close()
 
-    storedTrainingSet = pd.read_csv('trainingData.txt', header = None)
+    storedTrainingSet = pd.read_csv('C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/trainingData.txt', header = None)
 
 
     trainingDataShape = storedTrainingSet.shape
@@ -164,7 +164,7 @@ if __name__ == "__main__":
     # Training function
     model = TrainModel(trainingDataLength, training_set, sc)
     
-    trainingData = np.loadtxt("trainingData.txt").reshape(trainingDataShape[0], trainingDataShape[1])
+    trainingData = np.loadtxt("C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/trainingData.txt").reshape(trainingDataShape[0], trainingDataShape[1])
 
     sc.fit_transform(trainingData)
     

@@ -4,7 +4,70 @@
         <meta charset="UTF-8">
         <title>Index</title>
 
-        <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/myCSS.css') }}">
+        <style>
+
+body {
+  /* background: rgb(250,250,250); */
+  background: linear-gradient(180deg, rgba(250,250,250,1) 0%, rgba(230,254,255,1) 100%);
+  /* overflow: hidden; */
+
+}
+
+#plotContainer {
+    max-height: 300px;
+    text-align: right;
+    /* float: right; */
+
+    
+}
+
+canvas{
+    width:670px !important;
+    height:430px !important;
+    float: right;
+}
+
+.myTitle {
+    text-align: center;
+    padding-top: 10px;
+    margin-bottom: 20px;
+    /* color: rgb(255, 0, 0); */
+    background-color: rgb(233, 253, 255);
+    border-bottom: 2px solid #b4b4b4;
+    /* outline: #9e9e9e solid 10px; */
+}
+
+.disclamer {
+  background-color: #ebebeb;
+  border: 1px solid #b4b4b4;
+  width: 550px;
+  padding-left: 10px;
+  padding-right: 10px;
+  position: relative;
+  /* left: 15; */
+  margin-top: 50px;
+}
+
+#FileUpload {
+  background-color: #ebebeb;
+  border: 1px solid #b4b4b4;
+  width: 550px;
+  padding-left: 10px;
+  padding-right: 10px;
+  position: relative;
+  /* left: 15; */
+  margin-top: 100px;
+}
+
+
+
+
+
+
+        </style>
+
+<!-- Change the css file name when moving css back into it -->
+        <!-- <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/myCSS.css') }}"> -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
 
@@ -28,21 +91,35 @@
         </script>
 
     </head>
-
+ 
     <body>
-        <h1>Stock prediction software</h1>
-        <h4><p>
-          Disclaimer:
-          <br>All forecasts generated from this site are not guaranteed
-          and should not be taken as investment or financial advice. 
-          <br>If you’re not sure if an investment is right for you, 
-          please seek professional financial advice. 
-          <br>All investments may fall or rise in value, 
-          so you could get back less than you invest. 
-          <br>Past performance should not be seen as a guaranteed guide to the future. 
-          This website and associates cannot be 
-          <br>held liable for any financial or other losses incurred or gains made as a result of using these forecasts.
-        </p></h4>
+      <div class="myTitle">
+        <h1>Smart Stock Forecasting</h1>
+      </div>  
+
+
+
+      <canvas id="myChart" width="300" height="300"></canvas>
+
+      <div class="disclamer">
+        <p>
+          <h4>Disclaimer:</h4>
+          <h5>
+            All forecasts generated from this site are not guaranteed
+            and should not be taken as investment or financial advice. 
+            If you’re not sure if an investment is right for you, 
+            please seek professional financial advice. 
+            All investments may fall or rise in value, 
+            so you could get back less than you invest. 
+            Past performance should not be seen as a guaranteed guide to the future. 
+            This website and associates cannot be 
+            held liable for any financial or other losses incurred or gains made as a result of using these forecasts.
+          </h5>
+         
+        </p>
+      </div>
+      
+      <div id="FileUpload">
         <p>Check this box to confirm that you have read and agree to our <a href="/TermsOfService">terms of service</a>: <input type="checkbox" id="ToSChecker" onclick="ToS()"></p>
        
         <form id="upload-csv" method="post" enctype="multipart/form-data">
@@ -56,10 +133,14 @@
               <input name="file" type="file" id="modelInput" disabled>
               <button id="upload-h5-file-btn" type="button" disabled>Upload</button>
         </form>
+      </div>
+      
 
-        <div id="plotContainer">
-            <canvas id="myChart" width="300" height="300"></canvas>
-        </div>
+        
+
+        <!-- <div id="plotContainer"> -->
+            <!-- <canvas id="myChart" width="300" height="300"></canvas> -->
+        <!-- </div> -->
 
     </body>
 

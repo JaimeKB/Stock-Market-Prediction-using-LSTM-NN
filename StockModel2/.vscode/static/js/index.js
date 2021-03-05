@@ -101,7 +101,7 @@ $(document).ready(function(){
               chartData.push(predictedData[i][0])
             }
 
-            loadChart(dateRange.slice(0, 150), chartData.slice(0, 150))
+            loadChart(dateRange.slice(0, 20), chartData.slice(0, 40))
         },
     });
   });

@@ -54,7 +54,7 @@ def uploadCSVFile():
     if request.method == 'POST':
         uploaded_file = request.files['CSVfile']
         if uploaded_file.filename != '':
-            uploaded_file.save(os.path.join('userCSVFiles', "userCSV.csv"))
+            uploaded_file.save(os.path.join('C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/userCSVFiles', "userCSV.csv"))
 
             result, length = ValidateYahooCSVData("C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/userCSVFiles", "userCSV.csv")
 

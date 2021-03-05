@@ -4,14 +4,18 @@
 }
 
 canvas{
-    width:1100px !important;
-    height:500px !important;
-    width:1250px !important;
-    height:1000px !important;
+    width:300px !important;
+    height:300px !important;
+ 
 }
 
-h1{
-    color: crimson;
+
+
+
+.myTitle {
+    text-align: center;
+    margin-top:20px;
+
 }
 
 .Container {

@@ -59,7 +59,7 @@ def ValidateYahooCSVData(filePath, filename):
             return("Fail", 0)
         else:
             for index, row in dataSet.iterrows():
-                result = validateDate(row['Date'])             
+                validateDate(row['Date'])             
                 if(pd.isna(row['Open']) or pd.isna(row['High']) or pd.isna(row['Low']) or pd.isna(row['Close']) or pd.isna(row['Volume'])):
                     print("Null data in file")
                     return("Fail", 0)
@@ -119,10 +119,10 @@ def ValidateTXTData(filename):
             fileResult = "Fail"
         else:
             for index, row in dataSet.iterrows():
-                result = validateDate(row['Date']) 
+                validateDate(row['Date']) 
                 data = [row['Open'], row['High'], row['Low'], row['Close'], row['Volume']]        
                 result2 = validateNumbers(data)
-                if(result == "Fail" or result2 == "Fail"):
+                if(result2 == "Fail"):
                     fileResult = "Fail"
 
     if(fileResult == "Fail"):
@@ -177,11 +177,11 @@ def LoopThroughFiles():
 
 def OrganiseTestingData(df): 
 
-    storedTrainingSet = pd.read_csv('trainingData.txt', header = None)
+    storedTrainingSet = pd.read_csv('C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/trainingData.txt', header = None)
     trainingDataShape = storedTrainingSet.shape
 
     sc = MinMaxScaler(feature_range = (0, 1))
-    trainingData = np.loadtxt("trainingData.txt").reshape(trainingDataShape[0], trainingDataShape[1])
+    trainingData = np.loadtxt("C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/trainingData.txt").reshape(trainingDataShape[0], trainingDataShape[1])
     sc.fit_transform(trainingData)
     testingDataLength = math.floor(len(df.iloc[:, 1:2]))
 

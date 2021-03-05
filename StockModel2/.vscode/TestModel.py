@@ -18,11 +18,11 @@ from DataValidation import OrganiseTestingData
 
 def PredictData(x_test): 
 
-    model = load_model('Model_Test.h5')
+    model = load_model('C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/Model_Test.h5')
     sc = MinMaxScaler(feature_range = (0, 1))
-    storedTrainingSet = pd.read_csv('trainingData.txt', header = None)
+    storedTrainingSet = pd.read_csv('C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/trainingData.txt', header = None)
     trainingDataShape = storedTrainingSet.shape
-    trainingData = np.loadtxt("trainingData.txt").reshape(trainingDataShape[0], trainingDataShape[1])
+    trainingData = np.loadtxt("C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/trainingData.txt").reshape(trainingDataShape[0], trainingDataShape[1])
     sc.fit_transform(trainingData)
 
     predicted_stock_price = model.predict(x_test)
@@ -31,16 +31,16 @@ def PredictData(x_test):
     return predicted_stock_price
 
 def TestUserModel():
-    model = load_model("userModels/userModel.h5")
+    model = load_model("C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/userModels/userModel.h5")
 
     df=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/TeslaTestData.csv")
     dateRange = df.loc[60:, 'Date']
     x_test = OrganiseTestingData(df)
 
     sc = MinMaxScaler(feature_range = (0, 1))
-    storedTrainingSet = pd.read_csv('trainingData.txt', header = None)
+    storedTrainingSet = pd.read_csv('C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/trainingData.txt', header = None)
     trainingDataShape = storedTrainingSet.shape
-    trainingData = np.loadtxt("trainingData.txt").reshape(trainingDataShape[0], trainingDataShape[1])
+    trainingData = np.loadtxt("C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/trainingData.txt").reshape(trainingDataShape[0], trainingDataShape[1])
     sc.fit_transform(trainingData)
 
     predicted_stock_price = model.predict(x_test)
@@ -51,15 +51,15 @@ def TestUserModel():
 
 def RunOwn():
 
-    model = load_model('Model_Test.h5')
+    model = load_model('C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/Model_Test.h5')
 
     df=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/TeslaTestData.csv")
     x_test = OrganiseTestingData(df)
 
     sc = MinMaxScaler(feature_range = (0, 1))
-    storedTrainingSet = pd.read_csv('trainingData.txt', header = None)
+    storedTrainingSet = pd.read_csv('C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/trainingData.txt', header = None)
     trainingDataShape = storedTrainingSet.shape
-    trainingData = np.loadtxt("trainingData.txt").reshape(trainingDataShape[0], trainingDataShape[1])
+    trainingData = np.loadtxt("C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/trainingData.txt").reshape(trainingDataShape[0], trainingDataShape[1])
     sc.fit_transform(trainingData)
 
     predicted_stock_price = model.predict(x_test)
