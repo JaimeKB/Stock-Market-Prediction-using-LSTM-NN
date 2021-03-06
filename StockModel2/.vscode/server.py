@@ -33,7 +33,7 @@ def upldfile():
     if request.method == 'POST':
         uploaded_file = request.files['file']
         if uploaded_file.filename != '':
-            uploaded_file.save(os.path.join('userModels', "userModel.h5"))
+            uploaded_file.save(os.path.join('C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/userModels', "userModel.h5"))
             predictedData, dateRange = TestUserModel()
 
             myModelPredictedData = RunOwn()

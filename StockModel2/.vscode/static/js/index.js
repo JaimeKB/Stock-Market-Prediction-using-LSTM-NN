@@ -33,20 +33,20 @@ function parseData(data){
 function loadChart(xDatelabels, yStockData) {
 
 let ctx = document.getElementById('myChart').getContext('2d');
-let myChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: xDatelabels,
-        datasets: [{
-            label: 'Stock price predictions',
-            data: yStockData,
-            fill: false,
-            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-            borderColor: 'rgba(255, 99, 132, 1)',
-            borderWidth: 1
-        }]
-    },
-});
+  let myChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+          labels: xDatelabels,
+          datasets: [{
+              label: 'Stock price predictions',
+              data: yStockData,
+              fill: false,
+              backgroundColor: 'rgba(255, 99, 132, 0.2)',
+              borderColor: 'rgba(255, 99, 132, 1)',
+              borderWidth: 1
+          }]
+      },
+  });
 }
 
 function load2Charts(xDatelabels, yStockData1, yStockData2) {
@@ -101,9 +101,10 @@ $(document).ready(function(){
               chartData.push(predictedData[i][0])
             }
 
-            loadChart(dateRange.slice(0, 20), chartData.slice(0, 40))
+            loadChart(dateRange.slice(0, 90), chartData.slice(0, 90))
         },
     });
+
   });
 
   $('#upload-h5-file-btn').click(function() {
@@ -133,5 +134,6 @@ $(document).ready(function(){
             load2Charts(dateRange.slice(0, 150), chartData1.slice(0, 150), chartData2.slice(0, 150))
         },
     });
+
   });
 });
