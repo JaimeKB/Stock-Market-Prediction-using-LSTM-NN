@@ -160,9 +160,9 @@ if __name__ == "__main__":
 
     trainingDataShape = storedTrainingSet.shape
 
-    #model = load_model('Model_Test.h5')
+    model = load_model('C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/Model_Test.h5')
     # Training function
-    model = TrainModel(trainingDataLength, training_set, sc)
+    #model = TrainModel(trainingDataLength, training_set, sc)
     
     trainingData = np.loadtxt("C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/trainingData.txt").reshape(trainingDataShape[0], trainingDataShape[1])
 
