@@ -22,10 +22,9 @@ import numpy as np
 import pandas as pd 
 import matplotlib.pyplot as plt
 from pandas.plotting import lag_plot
-from pandas import datetime
 from statsmodels.tsa.arima_model import ARIMA
 from sklearn.metrics import mean_squared_error
-
+from math import sqrt
 df=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/TSLA.csv")
 
 # plt.figure()
@@ -55,11 +54,11 @@ for time_point in range(N_test_observations):
     true_test_value = test_data[time_point]
     history.append(true_test_value)
 
-print(test_data.shape)
-print(model_predictions.shape)
+mse = mean_squared_error(test_data[:], model_predictions[:])
+rmse = sqrt(mse)
 
-MSE_error = mean_squared_error(test_data, model_predictions)
-print('Testing Mean Squared Error is {}'.format(MSE_error))
+print("mean squred error: " + str(mse))
+print("root mean squared error: " + str(rmse))
 
 test_set_range = df[int(len(df)*0.7):].index
 plt.plot(test_set_range, model_predictions, color='blue', marker='o', linestyle='dashed',label='Predicted Price')

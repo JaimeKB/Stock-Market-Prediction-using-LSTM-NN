@@ -1,4 +1,5 @@
 import math
+from math import sqrt
 import matplotlib.pyplot as plt
 import tensorflow.keras
 import pandas as pd
@@ -81,6 +82,47 @@ def OrganiseTestingData(df, trainingDataLength, sc):
     # print(len(x_test))
     return x_test, dataset_test, y_test
 
+def TrainWithUnivariateInputAndVectorOutput():
+    training_set_scaled = sc.fit_transform(training_set)
+
+    # data structure with 60 time-steps and 1 output
+    x_train = []
+    y_train = []
+    for i in range(60, trainingDataLength):
+        x_train.append(training_set_scaled[i-60:i, 0])
+        y_train.append(training_set_scaled[i, 0])
+
+    x_train = np.array(x_train)
+    y_train = np.array(y_train)
+
+    x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1], 1))
+    # print("x_train shape:")
+    # print(x_train.shape)
+    # (821, 60, 1)
+
+    model = Sequential()
+    # Layer 1
+    model.add(LSTM(units = 60, return_sequences = True, input_shape = (x_train.shape[1], 1)))
+    model.add(Dropout(0.2))
+    # Layer 2
+    model.add(LSTM(units = 60, return_sequences = True))
+    model.add(Dropout(0.2))
+    # Layer 3
+    model.add(LSTM(units = 60, return_sequences = True))
+    model.add(Dropout(0.2))
+    # Layer 4
+    model.add(LSTM(units = 60))
+    model.add(Dropout(0.2))
+    # Output layer
+    model.add(Dense(units = 1))
+    # Compile and fit model to training dataset
+    model.compile(optimizer = 'adam', loss= 'mean_squared_error')
+    model.fit(x_train, y_train, epochs = 100, batch_size = 32)
+    model.save('C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/Model_Test.h5')  # creates a HDF5 file 'my_model.h5'
+
+    return model
+
+
 
 def TrainModel(trainingDataLength, training_set, sc): 
 
@@ -126,30 +168,26 @@ def TrainModel(trainingDataLength, training_set, sc):
 def PredictData(model, x_test, y_test, sc): 
     predicted_stock_price = model.predict(x_test)
     predicted_stock_price = sc.inverse_transform(predicted_stock_price)
-    
-    # print(type(x_test))
-    # print(x_test.shape)
-    # print(type(predicted_stock_price))
-    # print(predicted_stock_price.shape)
-
-    # MSE_error = mean_squared_error(x_test, predicted_stock_price)
-    # print('Testing Mean Squared Error is {}'.format(MSE_error))
-    # score = model.evaluate(x_test, y_test, batch_size=32)
-    # print("Score:")
-    # print(score)
 
     return predicted_stock_price
+
+def EvaluateForecast(actual, predicted):
+
+    mse = mean_squared_error(actual[:], predicted[:])
+    rmse = sqrt(mse)
+
+    print("mean squred error: " + str(mse))
+    print("root mean squared error: " + str(rmse))
 
 
 if __name__ == "__main__":
 
-    df=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/TSLA_TEMP.csv")
+    df=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/TSLA.csv")
 
     # Scale/normalise data
     sc = MinMaxScaler(feature_range = (0, 1))
 
     trainingDataLength, training_set = OrganiseTrainingData(df)
-
     # f = open("trainingData.txt", "w")
     # for row in training_set:
     #     np.savetxt(f, row)
@@ -179,6 +217,8 @@ if __name__ == "__main__":
 
     print(df.loc[trainingDataLength:, 'Date'])
     print(predicted_stock_price.shape)
+
+    EvaluateForecast(dataset_test, predicted_stock_price)
 
     plt.plot(df.loc[trainingDataLength:, 'Date'], dataset_test.values, color = 'red', label = 'Actual Stock Price')
     plt.plot(df.loc[trainingDataLength:, 'Date'], predicted_stock_price, color = 'blue', label = 'Predicted Stock Price')
