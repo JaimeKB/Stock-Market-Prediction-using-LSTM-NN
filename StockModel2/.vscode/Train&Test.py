@@ -8,6 +8,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import LSTM
 from tensorflow.keras.layers import Dropout
+from tensorflow.keras.optimizers import Adam
 #from tensorflow.keras.layers import *
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error
@@ -145,27 +146,23 @@ def TrainModel(trainingDataLength, training_set, sc):
 
     model = Sequential()
     # Layer 1
-    model.add(LSTM(units = 60, return_sequences = True, input_shape = (x_train.shape[1], 1)))
+    model.add(LSTM(units = 100, return_sequences = True, input_shape = (x_train.shape[1], 1)))
     model.add(Dropout(0.2))
     # Layer 2
-    model.add(LSTM(units = 60, return_sequences = True))
+    model.add(LSTM(units = 50, return_sequences = False))
     model.add(Dropout(0.2))
-    # Layer 3
-    model.add(LSTM(units = 60, return_sequences = True))
-    model.add(Dropout(0.2))
-    # Layer 4
-    model.add(LSTM(units = 60))
-    model.add(Dropout(0.2))
+
     # Output layer
     model.add(Dense(units = 1))
     # Compile and fit model to training dataset
-    model.compile(optimizer = 'adam', loss= 'mean_squared_error')
-    model.fit(x_train, y_train, epochs = 100, batch_size = 32)
+    model.compile(loss='mean_squared_error', optimizer = Adam(learning_rate=0.01))
+    model.fit(x_train, y_train, epochs = 50, batch_size = 32)
     model.save('C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/Model_Test.h5')  # creates a HDF5 file 'my_model.h5'
 
     return model
 
 def PredictData(model, x_test, y_test, sc): 
+
     predicted_stock_price = model.predict(x_test)
     predicted_stock_price = sc.inverse_transform(predicted_stock_price)
 
@@ -176,8 +173,8 @@ def EvaluateForecast(actual, predicted):
     mse = mean_squared_error(actual[:], predicted[:])
     rmse = sqrt(mse)
 
-    print("mean squred error: " + str(mse))
-    print("root mean squared error: " + str(rmse))
+    print("mean squred error: " + str(mse / len(predicted)))
+    print("root mean squared error: " + str(rmse / len(predicted)))
 
 
 if __name__ == "__main__":
@@ -198,9 +195,9 @@ if __name__ == "__main__":
 
     trainingDataShape = storedTrainingSet.shape
 
-    model = load_model('C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/Model_Test.h5')
+    #model = load_model('C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/Model_Test.h5')
     # Training function
-    #model = TrainModel(trainingDataLength, training_set, sc)
+    model = TrainModel(trainingDataLength, training_set, sc)
     
     trainingData = np.loadtxt("C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/trainingData.txt").reshape(trainingDataShape[0], trainingDataShape[1])
 
