@@ -115,7 +115,7 @@ def TrainModel(n_past, x_train, y_train):
     model.add(LSTM(units=50, return_sequences=True, input_shape=(n_past, x_train.shape[2])))
     model.add(Dropout(0.05))
     model.add(LSTM(units=50, return_sequences=False))
-    model.add(Dropout(0.05))
+    model.add(Dropout(0.1))
     model.add(Dense(units=1, activation=None))
     model.compile(loss='mean_squared_error', optimizer = Adam(learning_rate=0.01))
 
