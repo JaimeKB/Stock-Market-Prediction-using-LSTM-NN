@@ -1,6 +1,3 @@
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
 from flask import Flask
 from flask import render_template
 from flask import jsonify
