@@ -28,9 +28,12 @@ def ShowGraph():
     plt.show()
 
 def PlotData(XValues, YValues, colour, dataTitle):
-    plt.plot(XValues, YValues, marker = 'o', color = colour, label = dataTitle)
+    # plt.plot(XValues, YValues, marker = 'o', color = colour, label = dataTitle)
+    # plt.plot(XValues, YValues, marker = 'o', color = colour)
+    plt.plot(XValues, YValues, color = colour, label = dataTitle)
 
-def PredictOneIteration(n_past, n_future, n_future_values, historicData):
+
+def PredictOneIteration(n_past, n_future, n_future_values, historicData, model):
     ### Set up data indexing for dependent and independent variables
     x_train = []
 
@@ -42,7 +45,7 @@ def PredictOneIteration(n_past, n_future, n_future_values, historicData):
 
     x_train = np.asarray(x_train).astype('float32')
 
-    print("x_train shape =={}".format(x_train.shape))
+    # print("x_train shape =={}".format(x_train.shape))
 
 
     scalerPredict = MinMaxScaler(feature_range = (0, 1))
@@ -52,7 +55,7 @@ def PredictOneIteration(n_past, n_future, n_future_values, historicData):
 
 
     testDates = historicData[endOfData:, 0]
-    print(testDates[-1])
+    # print(testDates[-1])
     newDay = AddExtraDay(testDates[-1])
 
     testYPoints = model.predict(x_train)
@@ -61,8 +64,8 @@ def PredictOneIteration(n_past, n_future, n_future_values, historicData):
     testYPoints = np.array(testYPoints)
     singleXValue = np.array(newDay)
 
-    print("singleXValue {}".format(singleXValue))
-    print("testYPoints {}".format(testYPoints))
+    # print("singleXValue {}".format(singleXValue))
+    # print("testYPoints {}".format(testYPoints))
 
     PlotData(singleXValue, testYPoints, "purple", "predicted Data")
 
@@ -88,16 +91,19 @@ def PrepTrainingData(n_past, n_future, n_future_values, trainingData):
 
 def PrepTestingData(n_past, n_future, n_future_values, testingData):
 
+    # print(testingData)
+
     xTest = []
     yTest = []
-
-    for i in range(n_past, len(testingData) - n_future - n_future_values):
+    for i in range(n_past + 1, len(testingData) - n_future - n_future_values + 1):
+        # print("I HAPPENED")
         xTest.append(testingData[i - n_past:i, 0:testingData.shape[1]])
         yTest.append(testingData[i + n_future - 1:i + n_future + n_future_values, 3])
-
+        # print(xTest)
+        # print(yTest)
     xTest, yTest = np.array(xTest), np.array(yTest)
 
-    print("xTest shape: {}".format(xTest.shape))
+    # print("xTest shape: {}".format(xTest.shape))
 
     return xTest, yTest
 
@@ -106,14 +112,14 @@ def TrainModel(n_past, x_train, y_train):
     print("Model input shape {}, {}".format(n_past, x_train.shape[2]))
 
     model = Sequential()
-    model.add(LSTM(units=100, return_sequences=True, input_shape=(n_past, x_train.shape[2])))
-    model.add(Dropout(0.2))
+    model.add(LSTM(units=50, return_sequences=True, input_shape=(n_past, x_train.shape[2])))
+    model.add(Dropout(0.05))
     model.add(LSTM(units=50, return_sequences=False))
-    model.add(Dropout(0.2))
+    model.add(Dropout(0.05))
     model.add(Dense(units=1, activation=None))
     model.compile(loss='mean_squared_error', optimizer = Adam(learning_rate=0.01))
 
-    history = model.fit(x_train, y_train, epochs = 5, batch_size = 32)
+    history = model.fit(x_train, y_train, epochs = 50, batch_size = 32)
 
     # plt.plot(history.history['loss'], label='train')
     # plt.legend()
@@ -149,14 +155,14 @@ def EvaluateForecast(actual, predicted):
     mse = mean_squared_error(actual[:], predicted[:])
     rmse = sqrt(mse)
 
-    print("mean squred error: " + str(mse / len(predicted)))
-    print("root mean squared error: " + str(rmse / len(predicted)))
+    print("mean squred error: " + str(mse))
+    print("root mean squared error: " + str(rmse))
 
     increase = sum(actual[:]) - sum(predicted[:])
     increase = increase / sum(actual[:])
     print("Percentage change {}".format(abs(increase * 100)))
 
-def TrainPrediction(model, x_train, trainingDataLength, dataset, y_train):
+def TrainPrediction(model, x_train, trainingDataLength, dataset, y_train, n_past, n_future):
 
     trainPredict = model.predict(x_train)
 
@@ -182,7 +188,9 @@ def TrainPrediction(model, x_train, trainingDataLength, dataset, y_train):
     trainYPoints = np.array(trainPredict)
     PlotData(trainXPoints, trainYPoints, "green", "Training Data")
 
-def TestPrediction(dataset, trainingDataLength, scaler, n_past, n_future, n_future_values, model):
+def TestPrediction(dataset, trainingDataLength, n_past, n_future, n_future_values, model):
+
+    scaler = MinMaxScaler(feature_range=(0,1))
     testingData =  dataset.iloc[trainingDataLength:, 1:].values
     testingData = scaler.fit_transform(testingData)
 
@@ -215,11 +223,106 @@ def TestPrediction(dataset, trainingDataLength, scaler, n_past, n_future, n_futu
     testYPoints = np.array(testPredict)
     PlotData(testXPoints, testYPoints, "red", "Testing Data")
 
-if __name__ == "__main__":
 
-    dataset=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/TSLA.csv")
+def TrainAndTest():
+    dataset=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/stockTesting/AMZN.csv")
 
     del dataset['Adj Close']
+
+    rowsToDrop = 0
+    dataset.drop(dataset.tail(rowsToDrop).index,inplace=True) # drop last rowsToDrop rows
+
+
+    dataset['Date'] = pd.to_datetime(dataset['Date'], format="%Y/%m/%d")
+    # DisplayFullDataset(dataset)
+
+    ### Plot actual data
+    ActualXPoints = np.array(dataset['Date'])
+    ActualYPoints = np.array(dataset['Close'])
+    PlotData(ActualXPoints, ActualYPoints, "blue", "Actual Data")
+
+    ### Data range for number of days to train with, and number of days to predict forward
+    n_future = 1            # days forward from last day in history data
+    n_future_values = 0     # number of days in to predict in vector format
+    n_past = 60             # number of days to look at in the past
+    
+
+    print("dataset shape {}".format(dataset.shape))
+
+    ### Set up training data
+    trainingDataLength = math.floor(len(dataset.iloc[:, 1:2])*0.70)
+
+    trainingData = dataset.iloc[:trainingDataLength, 1:].values
+    print("training data shape {}".format(trainingData.shape))
+
+    scaler = MinMaxScaler(feature_range=(0,1))
+    trainingData = scaler.fit_transform(trainingData)
+
+    x_train, y_train = PrepTrainingData(n_past, n_future, n_future_values, trainingData)
+
+    ### Train Model
+    model = TrainModel(n_past, x_train, y_train)
+
+    ### Run and plot training data
+    TrainPrediction(model, x_train, trainingDataLength, dataset, y_train, n_past, n_future)
+
+    ### Testing data
+    TestPrediction(dataset, trainingDataLength, n_past, n_future, n_future_values, model)
+
+    ### Single value prediction
+    # PredictOneIteration(n_past, n_future, n_future_values, dataset.iloc[trainingDataLength:, :].values)
+
+    # for i in range(n_past, len(dataset) - n_future - n_future_values):
+    #     PredictOneIteration(n_past, n_future, n_future_values, dataset.iloc[:i, :].values, model)
+    #     # yTest.append(testingData[i + n_future - 1:i + n_future + n_future_values, 3])
+
+
+
+    ShowGraph()
+
+
+def TrainFullFile():
+    dataset=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/stockTesting/AMZN.csv")
+
+    del dataset['Adj Close']
+
+    rowsToDrop = 0
+    dataset.drop(dataset.tail(rowsToDrop).index,inplace=True) # drop last rowsToDrop rows
+
+
+    dataset['Date'] = pd.to_datetime(dataset['Date'], format="%Y/%m/%d")
+
+    ### Data range for number of days to train with, and number of days to predict forward
+    n_future = 1            # days forward from last day in history data
+    n_future_values = 0     # number of days in to predict in vector format
+    n_past = 60             # number of days to look at in the past
+    
+
+    print("dataset shape {}".format(dataset.shape))
+    # DisplayFullDataset(dataset)
+
+    ### Set up training data
+    trainingDataLength = math.floor(len(dataset.iloc[:, 1:2]))
+
+    trainingData = dataset.iloc[:trainingDataLength, 1:].values
+    print("training data shape {}".format(trainingData.shape))
+
+    scaler = MinMaxScaler(feature_range=(0,1))
+    trainingData = scaler.fit_transform(trainingData)
+
+    x_train, y_train = PrepTrainingData(n_past, n_future, n_future_values, trainingData)
+
+    ### Train Model
+    model = TrainModel(n_past, x_train, y_train)
+    model.save('C:/Users/Jaime Kershaw Brown/Documents/Final year project/MultivariateModel.h5')  # creates a HDF5 file 'my_model.h5'
+
+
+def TestFullFile():
+
+    dataset=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/stockTesting/TSLA.csv")
+
+    del dataset['Adj Close']
+
 
     rowsToDrop = 0
     dataset.drop(dataset.tail(rowsToDrop).index,inplace=True) # drop last rowsToDrop rows
@@ -235,33 +338,66 @@ if __name__ == "__main__":
     ### Data range for number of days to train with, and number of days to predict forward
     n_future = 1            # days forward from last day in history data
     n_future_values = 0     # number of days in to predict in vector format
-    n_past = 60             # number of days to look at in the past
+    n_past = 1             # number of days to look at in the past
     
+    n_day_to_predict = 1
 
     print("dataset shape {}".format(dataset.shape))
-    # DisplayFullDataset(dataset)
+    # trainingDataLength = math.floor(len(dataset.iloc[:, 1:2])*0.9)
+    trainingDataLength = math.floor(len(dataset.iloc[:, 1:2])) - n_past - n_future - n_future_values - n_day_to_predict
 
-    ### Set up training data
-    trainingDataLength = math.floor(len(dataset.iloc[:, 1:2])*0.7)
-
-    trainingData = dataset.iloc[:trainingDataLength, 1:].values
-    print("training data shape {}".format(trainingData.shape))
+    model = load_model('C:/Users/Jaime Kershaw Brown/Documents/Final year project/MultivariateModel.h5')
 
     scaler = MinMaxScaler(feature_range=(0,1))
-    trainingData = scaler.fit_transform(trainingData)
+    testingData = dataset.iloc[trainingDataLength:, 1:].values
+    testingData = scaler.fit_transform(testingData)
 
-    x_train, y_train = PrepTrainingData(n_past, n_future, n_future_values, trainingData)
+    xTest, yTest = PrepTestingData(n_past, n_future, n_future_values, testingData)
+    testPredict = model.predict(xTest)
 
-    ### Train Model
-    model = TrainModel(n_past, x_train, y_train)
+    ### Test predictor scalar
 
-    ### Run and plot training data
-    # TrainPrediction(model, x_train, trainingDataLength, dataset, y_train)
+    scalerPredict = MinMaxScaler(feature_range = (0, 1))
+    predictValues = dataset.iloc[trainingDataLength: math.floor(len(dataset.iloc[:, 1:2])) -1, 4].values
+    print(dataset.tail(5))
+    print("PREDICT VALUES")
+    print(predictValues)
+    predictValues = predictValues.reshape(-1, 1)
+    scalerPredict.fit_transform(predictValues)
 
-    ### Testing data
-    # TestPrediction(dataset, trainingDataLength, scaler, n_past, n_future, n_future_values, model)
+    testPredict = scalerPredict.inverse_transform(testPredict)
+    testActual = scalerPredict.inverse_transform(yTest)
+
+    EvaluateForecast(testActual, testPredict)
+
+ 
+
+    testDates = dataset['Date'][trainingDataLength + n_past + n_future:]
+    # testDates = testDates.iloc[1:]
+
+    # newDay = AddExtraDay(testDates.iloc[-1])
+    # testDates.loc[len(testingData)-1] = newDay
+
+    # testXPoints = np.array(dataset['Date'][trainingDataLength + n_past + n_future:])
+    testXPoints = np.array(testDates)
+    testYPoints = np.array(testPredict)
+    PlotData(testXPoints, testYPoints, "red", "Testing Data")
+
 
     ### Single value prediction
-    PredictOneIteration(n_past, n_future, n_future_values, dataset.iloc[trainingDataLength:, :].values)
+    # PredictOneIteration(n_past, n_future, n_future_values, dataset.iloc[trainingDataLength:, :].values)
+
+    # for i in range(n_past, len(dataset) - n_future - n_future_values):
+    #     PredictOneIteration(n_past, n_future, n_future_values, dataset.iloc[:i, :].values, model)
+    #     # yTest.append(testingData[i + n_future - 1:i + n_future + n_future_values, 3])
+
+
 
     ShowGraph()
+
+
+if __name__ == "__main__":
+
+    TrainAndTest()
+    # TrainFullFile()
+    # TestFullFile()

@@ -35,7 +35,7 @@ def OrganiseTrainingData(df):
     
 
     trainingDataLength = math.floor(len(df.iloc[:, 1:2])*0.7)
-
+    print(trainingDataLength)
     training_set = df.iloc[:trainingDataLength, 1:2].values
     # 881 for training
     # 387 for testing
@@ -47,7 +47,7 @@ def OrganiseTestingData(df, trainingDataLength, sc):
     
     # Get length of data in file
     dataLength = len(df.iloc[:, 1:2])
-
+    print(dataLength)
     dataset_train = df.iloc[:trainingDataLength, 1:2]
     dataset_test = df.iloc[trainingDataLength:, 1:2]
 
@@ -146,17 +146,15 @@ def TrainModel(trainingDataLength, training_set, sc):
 
     model = Sequential()
     # Layer 1
-    model.add(LSTM(units = 100, return_sequences = True, input_shape = (x_train.shape[1], 1)))
+    model.add(LSTM(units = 50, return_sequences = False, input_shape = (x_train.shape[1], 1)))
     model.add(Dropout(0.2))
     # Layer 2
-    model.add(LSTM(units = 50, return_sequences = False))
-    model.add(Dropout(0.2))
 
     # Output layer
     model.add(Dense(units = 1))
     # Compile and fit model to training dataset
     model.compile(loss='mean_squared_error', optimizer = Adam(learning_rate=0.01))
-    model.fit(x_train, y_train, epochs = 50, batch_size = 32)
+    model.fit(x_train, y_train, epochs = 20, batch_size = 32)
     model.save('C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/Model_Test.h5')  # creates a HDF5 file 'my_model.h5'
 
     return model
@@ -173,8 +171,8 @@ def EvaluateForecast(actual, predicted):
     mse = mean_squared_error(actual[:], predicted[:])
     rmse = sqrt(mse)
 
-    print("mean squred error: " + str(mse / len(predicted)))
-    print("root mean squared error: " + str(rmse / len(predicted)))
+    print("mean squred error: " + str(mse))
+    print("root mean squared error: " + str(rmse))
 
 
 if __name__ == "__main__":
