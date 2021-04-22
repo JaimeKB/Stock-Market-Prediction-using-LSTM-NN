@@ -1,1 +1,2 @@
-web: gunicorn server:Myapp
+web: gunicorn StockModel2\.vscode\server:Myapp
+
