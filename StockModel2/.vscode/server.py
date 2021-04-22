@@ -12,20 +12,20 @@ import numpy as np
 import pandas as pd
 import os
 
-app = Flask(__name__)
+Myapp = Flask(__name__)
 
 def to_matrix(l):
     return [l[i:i+7] for i in range(0, len(l), 7)]
 
-@app.route("/Index")
+@Myapp.route("/Index")
 def hello():
     return render_template('Index.html')
 
-@app.route("/TermsOfService")
+@Myapp.route("/TermsOfService")
 def Redirect():
     return render_template('TermsOfService.html')
 
-@app.route('/uploadajax', methods = ['POST'])
+@Myapp.route('/uploadajax', methods = ['POST'])
 def upldfile():
     if request.method == 'POST':
         uploaded_file = request.files['file']
@@ -46,7 +46,7 @@ def upldfile():
     return("Success")
 
 
-@app.route('/uploadCSV', methods = ['POST'])
+@Myapp.route('/uploadCSV', methods = ['POST'])
 def uploadCSVFile():
     if request.method == 'POST':
         uploaded_file = request.files['CSVfile']
@@ -81,7 +81,7 @@ def uploadCSVFile():
 
 
 
-# @app.route('/stockDataFile/<stockData>',methods=['GET'])
+# @Myapp.route('/stockDataFile/<stockData>',methods=['GET'])
 # def ProcessStockData(stockData):
 #     print("Stock data recieved:")
 #     stockData = stockData.split(",")
@@ -106,4 +106,4 @@ def uploadCSVFile():
 
 
 if __name__ == "__main__":
-    app.run()
+    Myapp.run()
