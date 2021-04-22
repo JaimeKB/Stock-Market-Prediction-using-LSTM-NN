@@ -17,7 +17,7 @@ app = Flask(__name__)
 def to_matrix(l):
     return [l[i:i+7] for i in range(0, len(l), 7)]
 
-@app.route("/")
+@app.route("/Index")
 def hello():
     return render_template('Index.html')
 
