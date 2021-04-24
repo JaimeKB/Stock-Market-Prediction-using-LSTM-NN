@@ -1,0 +1,349 @@
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>Index</title>
+
+        <style>
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  /* background: rgb(250,250,250); */
+  background: linear-gradient(180deg, rgba(250,250,250,1) 0%, rgba(230,254,255,1) 100%);
+  /* overflow: hidden; */
+
+}
+
+#plotContainer {
+    max-height: 300px;
+    text-align: right;
+    /* float: right; */
+
+    
+}
+
+canvas{
+  margin-top: 20px;
+  width: 98% !important;
+  height:700px !important;
+}
+
+#myChart {
+  /* background-color: black;
+  color: white; */
+}
+
+.myTitle {
+    text-align: center;
+    padding-top: 10px;
+    margin-bottom: 20px;
+    /* color: rgb(255, 0, 0); */
+    background-color: rgb(233, 253, 255);
+    border-bottom: 2px solid #b4b4b4;
+    /* outline: #9e9e9e solid 10px; */
+}
+
+.disclamer {
+  background-color: #ebebeb;
+  border: 1px solid #b4b4b4;
+  width: 575px;
+  height: 175px;
+  padding-left: 10px;
+  padding-right: 10px;
+  position: relative;
+  /* right: 15; */
+  margin-top: 30px;
+}
+
+#FileUpload {
+  background-color: #ebebeb;
+  border: 1px solid #b4b4b4;
+  width: 575px;
+  height: 175px;
+  padding-left: 10px;
+  padding-right: 10px;
+  position: relative;
+  /* right: 15; */
+  margin-top: 30px;
+}
+
+.description {
+  float: right;
+  background-color: #ebebeb;
+  border: 1px solid #b4b4b4;
+  width: 575px;
+  height: 385px;
+  padding-left: 10px;
+  padding-right: 10px;
+  position: absolute;
+  right: 15;
+  margin-top: 10px;
+}
+
+        </style>
+
+<!-- Change the css file name when moving css back into it -->
+        <!-- <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/myCSS.css') }}"> -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+
+        <!-- <script src="{{ url_for('static',filename='js/index.js') }}"></script> -->
+
+        <script>    
+          function ToS() {
+            var checkBox = document.getElementById("ToSChecker");
+            if (checkBox.checked == true){
+              document.getElementById("upload-CSV-file-btn").disabled = false;
+              document.getElementById("upload-h5-file-btn").disabled = false;
+              document.getElementById("CSVInput").disabled = false;
+              document.getElementById("modelInput").disabled = false;
+            } else {
+              document.getElementById("upload-CSV-file-btn").disabled = true;
+              document.getElementById("upload-h5-file-btn").disabled = true;
+              document.getElementById("CSVInput").disabled = true;
+              document.getElementById("modelInput").disabled = true;
+            }
+          }
+
+
+////////////////////
+
+
+var obj_csv = {
+    size:0,
+    dataFile:[]
+};
+
+function readImage(input) {
+  if (input.files && input.files[0]) {               
+
+    let reader = new FileReader();
+    reader.readAsBinaryString(input.files[0]);
+    reader.onload = function (e) {
+      obj_csv.size = e.total;
+      obj_csv.dataFile = e.target.result
+      parseData(obj_csv.dataFile)          
+    }
+  }
+}
+
+function parseData(data){
+  let csvData = [];
+  let lbreak = data.split("\n");
+  lbreak.forEach(res => {
+ 
+    if((res.split(",")).length == 7) {
+      csvData.push(res.split(","));
+    }
+    
+  });
+  localStorage.setItem("fileData", csvData);
+
+}
+
+function loadChart(xDatelabels, yStockData) {
+
+ 
+$('#myChart').remove(); // this is my <canvas> element
+$('#canvasHolder').append('<canvas id="myChart"></canvas>');
+
+  let ctx = document.getElementById('myChart').getContext('2d');
+  let myChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+          labels: xDatelabels,
+          datasets: [{
+              label: 'Stock price predictions',
+              data: yStockData,
+              fill: false,
+              backgroundColor: 'rgba(255, 99, 132, 0.2)',
+              borderColor: 'rgba(255, 99, 132, 1)',
+              borderWidth: 1
+          }]
+      },
+  });
+}
+
+function load2Charts(xDatelabels, yStockData1, yStockData2) {
+
+$('#myChart').remove(); // this is my <canvas> element
+$('#canvasHolder').append('<canvas id="myChart"></canvas>');
+
+let ctx = document.getElementById('myChart').getContext('2d');
+  let myChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+          labels: xDatelabels,
+          datasets: [
+            {
+              label: "User's model Stock price predictions",
+              data: yStockData1,
+              fill: false,
+              backgroundColor: 'rgba(222, 17, 2, 0.2)',
+              borderColor: 'rgba(222, 17, 2, 1)',
+              borderWidth: 1
+            },
+            {
+              label: "Software's model Stock price predictions",
+              data: yStockData2,
+              fill: false,
+              backgroundColor: 'rgba(45, 5, 227, 0.2)',
+              borderColor: 'rgba(45, 5, 227, 1)',
+              borderWidth: 1
+            }
+        ]
+      },
+  });
+}
+
+$(document).ready(function(){
+
+  $('#upload-CSV-file-btn').click(function() {
+    var form_data = new FormData($('#upload-csv')[0]);
+    $.ajax({
+        type: 'POST',
+        url: '/uploadCSV',
+        data: form_data,
+        contentType: false,
+        cache: false,
+        processData: false,
+        success: function(dataDict) {
+            message = dataDict['message']
+            predictedData = dataDict['predictedData']
+            testData = dataDict['testData']
+            dateRange = dataDict['dateRange']
+            dataLength = dataDict['dataLength']                      
+
+            chartData = []
+
+            for (i = 0; i < predictedData.length; i++) {
+              chartData.push(predictedData[i][0])
+            }
+
+            loadChart(dateRange.slice(0, 90), chartData.slice(0, 90))
+            $('html, body').animate({scrollTop:$(document).height()}, 'slow');
+        },
+    });
+
+  });
+
+  $('#upload-h5-file-btn').click(function() {
+    var form_data = new FormData($('#upload-file')[0]);
+    $.ajax({
+        type: 'POST',
+        url: '/uploadajax',
+        data: form_data,
+        contentType: false,
+        cache: false,
+        processData: false,
+        success: function(dataDict) {
+            console.log('Success!');
+
+            predictedData = dataDict['predictedData']
+            myModelPredictedData = dataDict['myModelPredictedData']
+            dateRange = dataDict['dateRange']
+
+            chartData1 = []
+            chartData2 = []
+
+            for (i = 0; i < predictedData.length; i++) {
+              chartData1.push(predictedData[i][0])
+              chartData2.push(myModelPredictedData[i][0])
+            }
+
+            load2Charts(dateRange.slice(0, 150), chartData1.slice(0, 150), chartData2.slice(0, 150))
+            $('html, body').animate({scrollTop:$(document).height()}, 'slow');
+          },
+    });
+  });
+});
+
+
+
+
+
+///////////////////////////
+
+
+        </script>
+
+    </head>
+ 
+    <body>
+      <div class="myTitle">
+        <h1>Smart Stock Forecasting</h1>
+      </div>  
+
+      <div class="description">
+        This site provides a service which produces a mathamatical forecasting of stock market trends
+        using Artificial Intelligence, which has been trained to recognise patterns based on historical data.
+        <br><br>
+        To use this service, click the top "Choose File" button next to the select CSV instruction,
+        which will open a file browser, where you need to select a CSV file of historical stock data. 
+        The appropriate CSV file format can be attained at Yahoo Finance, where you type in the stock name or code,
+        and then click "historical data" on the right, and select your date range, and then download the file.
+        We reccomend you only select the last 6 months of data, as that is all you will need.
+        Unless you want to run the software on older data to see how accurate the prediction values are,
+        we reccomend you only select a 6 month range of data, but it doesn't matter if you select more.
+        Once you have selected your file, click upload which will run the data through the AI model,
+        and send the results back to be displayed on a timeline graph at the bottom of the page.
+        <br><br>
+        The other main service is for the user to upload their own stock prediction model, 
+        where you can upload an H5 file type of file that was saved in tensorflow, and then
+        the model has some pre-determined test data sent through it to produce a forecast.
+        The built in softwares own model is also used, and both forecasts are displayed in the 
+        graph at the bottom.
+      </div>
+
+
+      <div class="disclamer">
+        <p>
+          <h4>Disclaimer:</h4>
+          <h5>
+            All forecasts generated from this site are not guaranteed
+            and should not be taken as investment or financial advice. 
+            If you’re not sure if an investment is right for you, 
+            please seek professional financial advice. 
+            All investments may fall or rise in value, 
+            so you could get back less than you invest. 
+            Past performance should not be seen as a guaranteed guide to the future. 
+            This website and associates cannot be 
+            held liable for any financial or other losses incurred or gains made as a result of using these forecasts.
+          </h5>
+         
+        </p>
+      </div>
+      
+      <div id="FileUpload">
+        <br>
+        <p>Check this box to confirm that you have read and agree to our <a href="/TermsOfService">terms of service</a>: <input type="checkbox" id="ToSChecker" onclick="ToS()"></p>
+       
+        <form id="upload-csv" method="post" enctype="multipart/form-data">
+              <label for="file">Select a CSV file</label>
+              <input name="CSVfile" type="file" id="CSVInput" disabled>
+              <button id="upload-CSV-file-btn" type="button" disabled>Upload</button>
+        </form>
+
+        <form id="upload-file" method="post" enctype="multipart/form-data">
+              <label for="file">Select a h5 file</label>
+              <input name="file" type="file" id="modelInput" disabled>
+              <button id="upload-h5-file-btn" type="button" disabled>Upload</button>
+        </form>
+      </div>
+      
+      <div id="canvasHolder">
+        <!-- <canvas id="myChart"></canvas> -->
+      </div>
+
+        
+
+        <!-- <div id="plotContainer"> -->
+            <!-- <canvas id="myChart" width="300" height="300"></canvas> -->
+        <!-- </div> -->
+
+    </body>
+
+</html>
