@@ -40,6 +40,87 @@ def validateNumbers(data):
 
     return result
 
+
+def FindKnownSectorStocks():
+
+    filePath = "C:/Users/Jaime Kershaw Brown/Documents/Final year project/stocks"
+    
+    stockNames = []
+
+
+    directory = os.fsencode(filePath)
+    for file in os.listdir(directory):
+        filename = os.fsdecode(file)
+        if filename.endswith(".csv"): 
+            size = len(filename)
+            filenameTemp = filename[:size - 4]
+            stockNames.append(filenameTemp)
+            
+    print("Currently available stocks: {}".format(len(stockNames)))
+
+    stockSectorsDF=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/stock_symbols_sectors.csv")
+    del stockSectorsDF['Name']
+    del stockSectorsDF['Last Sale']
+    del stockSectorsDF['Net Change']
+    del stockSectorsDF['% Change']
+    del stockSectorsDF['Market Cap']
+    del stockSectorsDF['Country']
+    del stockSectorsDF['IPO Year']
+    del stockSectorsDF['Volume']
+    del stockSectorsDF['Industry']
+
+    StocksWithSectors = stockSectorsDF['Symbol'].tolist()
+
+    stocksAndSector = stockSectorsDF.values.tolist()
+
+    # stocksWithNoSector = []
+
+    # for stock in stocksAndSector:
+    #     if(stock[0] in stockNames):
+    #         if(pd.isna(stock[1])):
+    #             stocksWithNoSector.append(stock[0])
+
+    # print(len(stocksWithNoSector))
+
+    # directory = os.fsencode(filePath)
+    # for file in os.listdir(directory):
+    #     filename = os.fsdecode(file)
+    #     if filename.endswith(".csv"): 
+    #         size = len(filename)
+    #         filenameTemp = filename[:size - 4]
+    #         if filenameTemp in stocksWithNoSector:
+    #             print(filenameTemp)
+    #             if os.path.exists(filePath+"/"+filename):
+    #                 os.remove(filePath+"/"+filename)
+    #             else:
+    #                 print("The file does not exist")
+
+    for stock in stocksAndSector:
+        if(stock[0] in stockNames):
+            print(stock[0])
+            # df = pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/stocks/"+stock[0]+".csv")
+            # df.to_csv('C:/Users/Jaime Kershaw Brown/Documents/Final year project/SectorStocks/'+stock[1]+'/'+stock[0]+'.csv', index=False)
+
+
+    # print(stocksAndSector)
+
+    # validStocks = set(stockNames).intersection(StocksWithSectors)
+    # print("Stocks with sectors: {}".format(len(validStocks)))
+
+
+
+
+    # directory = os.fsencode(filePath)
+    # for file in os.listdir(directory):
+    #     filename = os.fsdecode(file)
+    #     if filename.endswith(".csv"): 
+    #         size = len(filename)
+    #         filenameTemp = filename[:size - 4]
+
+            
+
+
+
 def ValidateYahooCSVData(filePath, filename):
     """
     Check that data in file follows required format and won't cause any crashes.
@@ -54,21 +135,21 @@ def ValidateYahooCSVData(filePath, filename):
     else:
         df=pd.read_csv(filePath+"/"+filename, sep=",")
         dataSet = df.iloc[:]
-        if(len(dataSet.index) < 132):
+        if(len(dataSet.index) < 252):
             print("Not enough data in file!")
             return("Fail", 0)
-        else:
-            for index, row in dataSet.iterrows():
-                validateDate(row['Date'])             
-                if(pd.isna(row['Open']) or pd.isna(row['High']) or pd.isna(row['Low']) or pd.isna(row['Close']) or pd.isna(row['Volume'])):
-                    print("Null data in file")
-                    return("Fail", 0)
-                else:
-                    data = [row['Open'], row['High'], row['Low'], row['Close'], row['Volume']]
-                    result2 = validateNumbers(data)
-                    if(result2 == "Fail"):
-                        print("Numbers were not right type")
-                        return("Fail", 0) 
+        # else:
+        #     for index, row in dataSet.iterrows():
+        #         validateDate(row['Date'])             
+        #         if(pd.isna(row['Open']) or pd.isna(row['High']) or pd.isna(row['Low']) or pd.isna(row['Close']) or pd.isna(row['Volume'])):
+        #             print("Null data in file")
+        #             return("Fail", 0)
+        #         else:
+        #             data = [row['Open'], row['High'], row['Low'], row['Close'], row['Volume']]
+        #             result2 = validateNumbers(data)
+        #             if(result2 == "Fail"):
+        #                 print("Numbers were not right type")
+        #                 return("Fail", 0) 
                     
     return("Pass", len(dataSet.index))
 
@@ -206,4 +287,5 @@ def OrganiseTestingData(df):
 
 
 if __name__ == "__main__":
-    LoopThroughFiles()
+    # LoopThroughFiles()
+    FindKnownSectorStocks()

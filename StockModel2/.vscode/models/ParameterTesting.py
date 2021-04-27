@@ -22,57 +22,57 @@ import datetime
 from csv import writer
 
 
-def ChainStockFilesForTraining():
-    pass
+# def ChainStockFilesForTraining():
+#     pass
 
 
-def ShowGraph():
-    plt.xlabel('Time')
-    plt.ylabel('Stock Price')
-    plt.legend()
-    plt.show()
+# def ShowGraph():
+#     plt.xlabel('Time')
+#     plt.ylabel('Stock Price')
+#     plt.legend()
+#     plt.show()
 
-def PlotData(XValues, YValues, colour, dataTitle):
-    # plt.plot(XValues, YValues, marker = 'o', color = colour, label = dataTitle)
-    # plt.plot(XValues, YValues, marker = 'o', color = colour)
-    plt.plot(XValues, YValues, color = colour, label = dataTitle)
-
-
-def PredictOneIteration(n_past, n_future, n_future_values, historicData, model):
-    ### Set up data indexing for dependent and independent variables
-    x_train = []
-
-    endOfData = len(historicData) - n_past
-
-    ### Use past 50 days of all 5 columns to predict the next day of the 4th column (close)
-    # for i in range(0, len(historicData) - n_future_values):
-    x_train.append(historicData[endOfData:, 1:historicData.shape[1]])
-
-    x_train = np.asarray(x_train).astype('float32')
-
-    # print("x_train shape =={}".format(x_train.shape))
+# def PlotData(XValues, YValues, colour, dataTitle):
+#     # plt.plot(XValues, YValues, marker = 'o', color = colour, label = dataTitle)
+#     # plt.plot(XValues, YValues, marker = 'o', color = colour)
+#     plt.plot(XValues, YValues, color = colour, label = dataTitle)
 
 
-    scalerPredict = MinMaxScaler(feature_range = (0, 1))
-    predictValues = historicData[endOfData:, 4]
-    predictValues = predictValues.reshape(-1, 1)
-    scalerPredict.fit_transform(predictValues)
+# def PredictOneIteration(n_past, n_future, n_future_values, historicData, model):
+#     ### Set up data indexing for dependent and independent variables
+#     x_train = []
+
+#     endOfData = len(historicData) - n_past
+
+#     ### Use past 50 days of all 5 columns to predict the next day of the 4th column (close)
+#     # for i in range(0, len(historicData) - n_future_values):
+#     x_train.append(historicData[endOfData:, 1:historicData.shape[1]])
+
+#     x_train = np.asarray(x_train).astype('float32')
+
+#     # print("x_train shape =={}".format(x_train.shape))
 
 
-    testDates = historicData[endOfData:, 0]
-    # print(testDates[-1])
-    newDay = AddExtraDay(testDates[-1])
+#     scalerPredict = MinMaxScaler(feature_range = (0, 1))
+#     predictValues = historicData[endOfData:, 4]
+#     predictValues = predictValues.reshape(-1, 1)
+#     scalerPredict.fit_transform(predictValues)
 
-    testYPoints = model.predict(x_train)
-    testYPoints = scalerPredict.inverse_transform(testYPoints)
 
-    testYPoints = np.array(testYPoints)
-    singleXValue = np.array(newDay)
+#     testDates = historicData[endOfData:, 0]
+#     # print(testDates[-1])
+#     newDay = AddExtraDay(testDates[-1])
 
-    # print("singleXValue {}".format(singleXValue))
-    # print("testYPoints {}".format(testYPoints))
+#     testYPoints = model.predict(x_train)
+#     testYPoints = scalerPredict.inverse_transform(testYPoints)
 
-    PlotData(singleXValue, testYPoints, "purple", "predicted Data")
+#     testYPoints = np.array(testYPoints)
+#     singleXValue = np.array(newDay)
+
+#     # print("singleXValue {}".format(singleXValue))
+#     # print("testYPoints {}".format(testYPoints))
+
+#     PlotData(singleXValue, testYPoints, "purple", "predicted Data")
 
 def PrepTrainingData(n_past, n_future, n_future_values, trainingData):
     
@@ -132,28 +132,28 @@ def TrainModel(n_past, x_train, y_train, E, HU, DV):
 
     return model
 
-def AddExtraDay(currentLastDate):
-    oneDay = datetime.timedelta(days=1)
-    weekendsAndHolidays = holidays.US()
+# def AddExtraDay(currentLastDate):
+#     oneDay = datetime.timedelta(days=1)
+#     weekendsAndHolidays = holidays.US()
 
-    next_day = currentLastDate + oneDay
-    while next_day.weekday() in holidays.WEEKEND or next_day in weekendsAndHolidays:
-        next_day += oneDay
-    return next_day
+#     next_day = currentLastDate + oneDay
+#     while next_day.weekday() in holidays.WEEKEND or next_day in weekendsAndHolidays:
+#         next_day += oneDay
+#     return next_day
 
 
-def DisplayFullDataset(dataset):
-    """
+# def DisplayFullDataset(dataset):
+#     """
 
-    """
-    XPoints = np.array(dataset['Date'])
-    YPoints = np.array(dataset['Close'])
+#     """
+#     XPoints = np.array(dataset['Date'])
+#     YPoints = np.array(dataset['Close'])
 
-    plt.plot(XPoints, YPoints, color = 'blue', label = 'All Stock Data')
-    plt.xlabel('Time')
-    plt.ylabel('Stock Price')
-    plt.legend()
-    plt.show()
+#     plt.plot(XPoints, YPoints, color = 'blue', label = 'All Stock Data')
+#     plt.xlabel('Time')
+#     plt.ylabel('Stock Price')
+#     plt.legend()
+#     plt.show()
 
 def EvaluateForecast(actual, predicted):
 
@@ -179,124 +179,124 @@ def EvaluateForecast(actual, predicted):
     return mse, rmse, float(meanDifference), float(abs(increase * 100))
 
 
-def TrainPrediction(model, x_train, trainingDataLength, dataset, y_train, n_past, n_future):
+# def TrainPrediction(model, x_train, trainingDataLength, dataset, y_train, n_past, n_future):
 
-    trainPredict = model.predict(x_train)
+#     trainPredict = model.predict(x_train)
 
-    trainPredictionScaler = MinMaxScaler(feature_range=(0,1))
-    trainPredictionDataRange = dataset.iloc[:trainingDataLength, 4].values
-    trainPredictionDataRange = trainPredictionDataRange.reshape(-1, 1)
-    trainPredictionScaler.fit_transform(trainPredictionDataRange)
+#     trainPredictionScaler = MinMaxScaler(feature_range=(0,1))
+#     trainPredictionDataRange = dataset.iloc[:trainingDataLength, 4].values
+#     trainPredictionDataRange = trainPredictionDataRange.reshape(-1, 1)
+#     trainPredictionScaler.fit_transform(trainPredictionDataRange)
 
-    trainPredict = trainPredictionScaler.inverse_transform(trainPredict)
-    trainActual = trainPredictionScaler.inverse_transform(y_train)
+#     trainPredict = trainPredictionScaler.inverse_transform(trainPredict)
+#     trainActual = trainPredictionScaler.inverse_transform(y_train)
 
-    EvaluateForecast(trainActual, trainPredict)
+#     EvaluateForecast(trainActual, trainPredict)
 
-    trainDates = dataset['Date'][ n_past + n_future:trainingDataLength]
-    # trainDates = trainDates.iloc[0:]
+#     trainDates = dataset['Date'][ n_past + n_future:trainingDataLength]
+#     # trainDates = trainDates.iloc[0:]
 
-    # newDay = AddExtraDay(trainDates.iloc[-1])
-    # trainDates.loc[trainingDataLength-1] = newDay
+#     # newDay = AddExtraDay(trainDates.iloc[-1])
+#     # trainDates.loc[trainingDataLength-1] = newDay
     
 
-    # trainXPoints = np.array(dataset['Date'][ n_past + n_future:trainingDataLength])
-    trainXPoints = np.array(trainDates)
-    trainYPoints = np.array(trainPredict)
-    PlotData(trainXPoints, trainYPoints, "green", "Training Data")
+#     # trainXPoints = np.array(dataset['Date'][ n_past + n_future:trainingDataLength])
+#     trainXPoints = np.array(trainDates)
+#     trainYPoints = np.array(trainPredict)
+#     PlotData(trainXPoints, trainYPoints, "green", "Training Data")
 
-def TestPrediction(dataset, trainingDataLength, n_past, n_future, n_future_values, model):
+# def TestPrediction(dataset, trainingDataLength, n_past, n_future, n_future_values, model):
 
-    scaler = MinMaxScaler(feature_range=(0,1))
-    testingData =  dataset.iloc[trainingDataLength:, 1:].values
-    testingData = scaler.fit_transform(testingData)
+#     scaler = MinMaxScaler(feature_range=(0,1))
+#     testingData =  dataset.iloc[trainingDataLength:, 1:].values
+#     testingData = scaler.fit_transform(testingData)
 
-    xTest, yTest = PrepTestingData(n_past, n_future, n_future_values, testingData)
-    print(type(xTest))
-    testPredict = model.predict(xTest)
+#     xTest, yTest = PrepTestingData(n_past, n_future, n_future_values, testingData)
+#     print(type(xTest))
+#     testPredict = model.predict(xTest)
 
-    ### Test predictor scalar
+#     ### Test predictor scalar
 
-    scalerPredict = MinMaxScaler(feature_range = (0, 1))
-    predictValues = dataset.iloc[trainingDataLength + n_past:, 4].values
-    predictValues = predictValues.reshape(-1, 1)
-    scalerPredict.fit_transform(predictValues)
+#     scalerPredict = MinMaxScaler(feature_range = (0, 1))
+#     predictValues = dataset.iloc[trainingDataLength + n_past:, 4].values
+#     predictValues = predictValues.reshape(-1, 1)
+#     scalerPredict.fit_transform(predictValues)
 
-    testPredict = scalerPredict.inverse_transform(testPredict)
-    testActual = scalerPredict.inverse_transform(yTest)
+#     testPredict = scalerPredict.inverse_transform(testPredict)
+#     testActual = scalerPredict.inverse_transform(yTest)
 
-    # EvaluateForecast(testActual, testPredict)
+#     # EvaluateForecast(testActual, testPredict)
 
  
 
-    testDates = dataset['Date'][trainingDataLength + n_past + n_future:]
-    # testDates = testDates.iloc[1:]
+#     testDates = dataset['Date'][trainingDataLength + n_past + n_future:]
+#     # testDates = testDates.iloc[1:]
 
-    # newDay = AddExtraDay(testDates.iloc[-1])
-    # testDates.loc[len(testingData)-1] = newDay
+#     # newDay = AddExtraDay(testDates.iloc[-1])
+#     # testDates.loc[len(testingData)-1] = newDay
 
-    # testXPoints = np.array(dataset['Date'][trainingDataLength + n_past + n_future:])
-    testXPoints = np.array(testDates)
-    testYPoints = np.array(testPredict)
-    PlotData(testXPoints, testYPoints, "red", "Testing Data")
-
-
-def TrainAndTest():
-    dataset=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/stockTesting/AMZN.csv")
-
-    del dataset['Adj Close']
-
-    rowsToDrop = 0
-    dataset.drop(dataset.tail(rowsToDrop).index,inplace=True) # drop last rowsToDrop rows
+#     # testXPoints = np.array(dataset['Date'][trainingDataLength + n_past + n_future:])
+#     testXPoints = np.array(testDates)
+#     testYPoints = np.array(testPredict)
+#     PlotData(testXPoints, testYPoints, "red", "Testing Data")
 
 
-    dataset['Date'] = pd.to_datetime(dataset['Date'], format="%Y/%m/%d")
-    # DisplayFullDataset(dataset)
+# def TrainAndTest():
+#     dataset=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/stockTesting/AMZN.csv")
 
-    ### Plot actual data
-    ActualXPoints = np.array(dataset['Date'])
-    ActualYPoints = np.array(dataset['Close'])
-    PlotData(ActualXPoints, ActualYPoints, "blue", "Actual Data")
+#     del dataset['Adj Close']
 
-    ### Data range for number of days to train with, and number of days to predict forward
-    n_future = 1            # days forward from last day in history data
-    n_future_values = 0     # number of days in to predict in vector format
-    n_past = 60             # number of days to look at in the past
+#     rowsToDrop = 0
+#     dataset.drop(dataset.tail(rowsToDrop).index,inplace=True) # drop last rowsToDrop rows
+
+
+#     dataset['Date'] = pd.to_datetime(dataset['Date'], format="%Y/%m/%d")
+#     # DisplayFullDataset(dataset)
+
+#     ### Plot actual data
+#     ActualXPoints = np.array(dataset['Date'])
+#     ActualYPoints = np.array(dataset['Close'])
+#     PlotData(ActualXPoints, ActualYPoints, "blue", "Actual Data")
+
+#     ### Data range for number of days to train with, and number of days to predict forward
+#     n_future = 1            # days forward from last day in history data
+#     n_future_values = 0     # number of days in to predict in vector format
+#     n_past = 60             # number of days to look at in the past
     
 
-    print("dataset shape {}".format(dataset.shape))
+#     print("dataset shape {}".format(dataset.shape))
 
-    ### Set up training data
-    trainingDataLength = math.floor(len(dataset.iloc[:, 1:2])*0.70)
+#     ### Set up training data
+#     trainingDataLength = math.floor(len(dataset.iloc[:, 1:2])*0.70)
 
-    trainingData = dataset.iloc[:trainingDataLength, 1:].values
-    print("training data shape {}".format(trainingData.shape))
+#     trainingData = dataset.iloc[:trainingDataLength, 1:].values
+#     print("training data shape {}".format(trainingData.shape))
 
-    scaler = MinMaxScaler(feature_range=(0,1))
-    trainingData = scaler.fit_transform(trainingData)
+#     scaler = MinMaxScaler(feature_range=(0,1))
+#     trainingData = scaler.fit_transform(trainingData)
 
-    x_train, y_train = PrepTrainingData(n_past, n_future, n_future_values, trainingData)
+#     x_train, y_train = PrepTrainingData(n_past, n_future, n_future_values, trainingData)
 
-    ### Train Model
-    temp = 5
-    model = TrainModel(n_past, x_train, y_train, temp, temp, temp)
+#     ### Train Model
+#     temp = 5
+#     model = TrainModel(n_past, x_train, y_train, temp, temp, temp)
 
-    ### Run and plot training data
-    TrainPrediction(model, x_train, trainingDataLength, dataset, y_train, n_past, n_future)
+#     ### Run and plot training data
+#     TrainPrediction(model, x_train, trainingDataLength, dataset, y_train, n_past, n_future)
 
-    ### Testing data
-    TestPrediction(dataset, trainingDataLength, n_past, n_future, n_future_values, model)
+#     ### Testing data
+#     TestPrediction(dataset, trainingDataLength, n_past, n_future, n_future_values, model)
 
-    ### Single value prediction
-    # PredictOneIteration(n_past, n_future, n_future_values, dataset.iloc[trainingDataLength:, :].values)
+#     ### Single value prediction
+#     # PredictOneIteration(n_past, n_future, n_future_values, dataset.iloc[trainingDataLength:, :].values)
 
-    # for i in range(n_past, len(dataset) - n_future - n_future_values):
-    #     PredictOneIteration(n_past, n_future, n_future_values, dataset.iloc[:i, :].values, model)
-    #     # yTest.append(testingData[i + n_future - 1:i + n_future + n_future_values, 3])
+#     # for i in range(n_past, len(dataset) - n_future - n_future_values):
+#     #     PredictOneIteration(n_past, n_future, n_future_values, dataset.iloc[:i, :].values, model)
+#     #     # yTest.append(testingData[i + n_future - 1:i + n_future + n_future_values, 3])
 
 
 
-    ShowGraph()
+#     ShowGraph()
 
 
 def TrainFullFile(E, HU, DV):
@@ -307,7 +307,6 @@ def TrainFullFile(E, HU, DV):
     rowsToDrop = 0
     dataset.drop(dataset.tail(rowsToDrop).index,inplace=True) # drop last rowsToDrop rows
 
-
     dataset['Date'] = pd.to_datetime(dataset['Date'], format="%Y/%m/%d")
 
     ### Data range for number of days to train with, and number of days to predict forward
@@ -315,10 +314,6 @@ def TrainFullFile(E, HU, DV):
     n_future_values = 0     # number of days in to predict in vector format
     n_past = 60             # number of days to look at in the past
     
-
-    # print("dataset shape {}".format(dataset.shape))
-    # DisplayFullDataset(dataset)
-
     ### Set up training data
     trainingDataLength = math.floor(len(dataset.iloc[:, 1:2]))
 
@@ -337,94 +332,93 @@ def TrainFullFile(E, HU, DV):
 
     model.save('C:/Users/Jaime Kershaw Brown/Documents/Final year project/BatchModels/'+ModelName+'.h5')  # creates a HDF5 file 'my_model.h5'
 
+# def TestFullFile():
 
-def TestFullFile():
+#     dataset=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/stockTesting/TSLA.csv")
 
-    dataset=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/stockTesting/TSLA.csv")
-
-    del dataset['Adj Close']
-
-
-    rowsToDrop = 0
-    dataset.drop(dataset.tail(rowsToDrop).index,inplace=True) # drop last rowsToDrop rows
+#     del dataset['Adj Close']
 
 
-    dataset['Date'] = pd.to_datetime(dataset['Date'], format="%Y/%m/%d")
+#     rowsToDrop = 0
+#     dataset.drop(dataset.tail(rowsToDrop).index,inplace=True) # drop last rowsToDrop rows
 
-    ### Plot actual data
-    ActualXPoints = np.array(dataset['Date'])
-    ActualYPoints = np.array(dataset['Close'])
-    PlotData(ActualXPoints, ActualYPoints, "blue", "Actual Data")
 
-    ### Data range for number of days to train with, and number of days to predict forward
-    n_future = 1            # days forward from last day in history data
-    n_future_values = 0     # number of days in to predict in vector format
-    n_past = 1             # number of days to look at in the past
+#     dataset['Date'] = pd.to_datetime(dataset['Date'], format="%Y/%m/%d")
+
+#     ### Plot actual data
+#     ActualXPoints = np.array(dataset['Date'])
+#     ActualYPoints = np.array(dataset['Close'])
+#     PlotData(ActualXPoints, ActualYPoints, "blue", "Actual Data")
+
+#     ### Data range for number of days to train with, and number of days to predict forward
+#     n_future = 1            # days forward from last day in history data
+#     n_future_values = 0     # number of days in to predict in vector format
+#     n_past = 1             # number of days to look at in the past
     
-    n_day_to_predict = 1
+#     n_day_to_predict = 1
 
-    print("dataset shape {}".format(dataset.shape))
-    # trainingDataLength = math.floor(len(dataset.iloc[:, 1:2])*0.9)
-    trainingDataLength = math.floor(len(dataset.iloc[:, 1:2])) - n_past - n_future - n_future_values - n_day_to_predict
+#     print("dataset shape {}".format(dataset.shape))
+#     # trainingDataLength = math.floor(len(dataset.iloc[:, 1:2])*0.9)
+#     trainingDataLength = math.floor(len(dataset.iloc[:, 1:2])) - n_past - n_future - n_future_values - n_day_to_predict
 
-    model = load_model('C:/Users/Jaime Kershaw Brown/Documents/Final year project/MultivariateModel.h5')
+#     model = load_model('C:/Users/Jaime Kershaw Brown/Documents/Final year project/MultivariateModel.h5')
 
-    scaler = MinMaxScaler(feature_range=(0,1))
-    testingData = dataset.iloc[trainingDataLength:, 1:].values
-    testingData = scaler.fit_transform(testingData)
+#     scaler = MinMaxScaler(feature_range=(0,1))
+#     testingData = dataset.iloc[trainingDataLength:, 1:].values
+#     testingData = scaler.fit_transform(testingData)
 
-    xTest, yTest = PrepTestingData(n_past, n_future, n_future_values, testingData)
-    testPredict = model.predict(xTest)
+#     xTest, yTest = PrepTestingData(n_past, n_future, n_future_values, testingData)
+#     testPredict = model.predict(xTest)
 
-    ### Test predictor scalar
+#     ### Test predictor scalar
 
-    scalerPredict = MinMaxScaler(feature_range = (0, 1))
-    predictValues = dataset.iloc[trainingDataLength: math.floor(len(dataset.iloc[:, 1:2])) -1, 4].values
-    print(dataset.tail(5))
-    print("PREDICT VALUES")
-    print(predictValues)
-    predictValues = predictValues.reshape(-1, 1)
-    scalerPredict.fit_transform(predictValues)
+#     scalerPredict = MinMaxScaler(feature_range = (0, 1))
+#     predictValues = dataset.iloc[trainingDataLength: math.floor(len(dataset.iloc[:, 1:2])) -1, 4].values
+#     print(dataset.tail(5))
+#     print("PREDICT VALUES")
+#     print(predictValues)
+#     predictValues = predictValues.reshape(-1, 1)
+#     scalerPredict.fit_transform(predictValues)
 
-    testPredict = scalerPredict.inverse_transform(testPredict)
-    testActual = scalerPredict.inverse_transform(yTest)
+#     testPredict = scalerPredict.inverse_transform(testPredict)
+#     testActual = scalerPredict.inverse_transform(yTest)
 
-    # EvaluateForecast(testActual, testPredict)
+#     # EvaluateForecast(testActual, testPredict)
 
  
 
-    testDates = dataset['Date'][trainingDataLength + n_past + n_future:]
-    # testDates = testDates.iloc[1:]
+#     testDates = dataset['Date'][trainingDataLength + n_past + n_future:]
+#     # testDates = testDates.iloc[1:]
 
-    # newDay = AddExtraDay(testDates.iloc[-1])
-    # testDates.loc[len(testingData)-1] = newDay
+#     # newDay = AddExtraDay(testDates.iloc[-1])
+#     # testDates.loc[len(testingData)-1] = newDay
 
-    # testXPoints = np.array(dataset['Date'][trainingDataLength + n_past + n_future:])
-    testXPoints = np.array(testDates)
-    testYPoints = np.array(testPredict)
-    PlotData(testXPoints, testYPoints, "red", "Testing Data")
-
-
-    ### Single value prediction
-    # PredictOneIteration(n_past, n_future, n_future_values, dataset.iloc[trainingDataLength:, :].values)
-
-    # for i in range(n_past, len(dataset) - n_future - n_future_values):
-    #     PredictOneIteration(n_past, n_future, n_future_values, dataset.iloc[:i, :].values, model)
-    #     # yTest.append(testingData[i + n_future - 1:i + n_future + n_future_values, 3])
+#     # testXPoints = np.array(dataset['Date'][trainingDataLength + n_past + n_future:])
+#     testXPoints = np.array(testDates)
+#     testYPoints = np.array(testPredict)
+#     PlotData(testXPoints, testYPoints, "red", "Testing Data")
 
 
+#     ### Single value prediction
+#     # PredictOneIteration(n_past, n_future, n_future_values, dataset.iloc[trainingDataLength:, :].values)
 
-    ShowGraph()
+#     # for i in range(n_past, len(dataset) - n_future - n_future_values):
+#     #     PredictOneIteration(n_past, n_future, n_future_values, dataset.iloc[:i, :].values, model)
+#     #     # yTest.append(testingData[i + n_future - 1:i + n_future + n_future_values, 3])
+
+
+
+#     ShowGraph()
 
 
 def BatchTrain():
-    numOfEpochs = 80
-    numOfHiddenUnits = 75
+    numOfEpochs = 85
+    numOfHiddenUnits = 80
     dropoutValue = 125
 
 
-    for E in range(65, numOfEpochs, 5):
-        for HU in range(45, numOfHiddenUnits, 5):
+    for E in range(80, numOfEpochs, 5):
+        for HU in range(75, numOfHiddenUnits, 5):
                 for DV in range(0, dropoutValue, 25):
                     realDV = DV / 1000
                     print("Doing model with {} number of epochs, {} number of hidden units, {} dropout value.".format(E, HU, realDV))
@@ -512,10 +506,5 @@ def BatchTest():
 
 if __name__ == "__main__":
 
-    # BatchTrain()
-    BatchTest()
-
-
-    # TrainAndTest()
-    # TrainFullFile()
-    # TestFullFile()
+    BatchTrain()
+    # BatchTest()

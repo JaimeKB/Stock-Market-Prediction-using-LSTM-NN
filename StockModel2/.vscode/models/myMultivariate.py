@@ -28,9 +28,9 @@ def ShowGraph():
     plt.show()
 
 def PlotData(XValues, YValues, colour, dataTitle):
-    # plt.plot(XValues, YValues, marker = 'o', color = colour, label = dataTitle)
+    plt.plot(XValues, YValues, marker = 'o', color = colour, label = dataTitle)
     # plt.plot(XValues, YValues, marker = 'o', color = colour)
-    plt.plot(XValues, YValues, color = colour, label = dataTitle)
+    # plt.plot(XValues, YValues, color = colour, label = dataTitle)
 
 
 def PredictOneIteration(n_past, n_future, n_future_values, historicData, model):
@@ -103,7 +103,8 @@ def PrepTestingData(n_past, n_future, n_future_values, testingData):
         # print(yTest)
     xTest, yTest = np.array(xTest), np.array(yTest)
 
-    # print("xTest shape: {}".format(xTest.shape))
+    print("xTest shape: {}".format(xTest.shape))
+    print("xTest: {}".format(xTest))
 
     return xTest, yTest
 
@@ -113,13 +114,13 @@ def TrainModel(n_past, x_train, y_train):
 
     model = Sequential()
     model.add(LSTM(units=50, return_sequences=True, input_shape=(n_past, x_train.shape[2])))
-    model.add(Dropout(0.05))
+    model.add(Dropout(0.02))
     model.add(LSTM(units=50, return_sequences=False))
-    model.add(Dropout(0.05))
+    model.add(Dropout(0.02))
     model.add(Dense(units=1, activation=None))
     model.compile(loss='mean_squared_error', optimizer = Adam(learning_rate=0.01))
 
-    history = model.fit(x_train, y_train, epochs = 50, batch_size = 32)
+    history = model.fit(x_train, y_train, epochs = 20, batch_size = 32)
 
     # plt.plot(history.history['loss'], label='train')
     # plt.legend()
@@ -338,16 +339,16 @@ def TestFullFile():
     ### Data range for number of days to train with, and number of days to predict forward
     n_future = 1            # days forward from last day in history data
     n_future_values = 0     # number of days in to predict in vector format
-    n_past = 1             # number of days to look at in the past
+    n_past = 60              # number of days to look at in the past
     
-    n_day_to_predict = 1
+    n_day_to_predict = 100
 
     print("dataset shape {}".format(dataset.shape))
     # trainingDataLength = math.floor(len(dataset.iloc[:, 1:2])*0.9)
     trainingDataLength = math.floor(len(dataset.iloc[:, 1:2])) - n_past - n_future - n_future_values - n_day_to_predict
 
     model = load_model('C:/Users/Jaime Kershaw Brown/Documents/Final year project/MultivariateModel.h5')
-
+    print(model.summary())
     scaler = MinMaxScaler(feature_range=(0,1))
     testingData = dataset.iloc[trainingDataLength:, 1:].values
     testingData = scaler.fit_transform(testingData)
@@ -398,6 +399,6 @@ def TestFullFile():
 
 if __name__ == "__main__":
 
-    TrainAndTest()
+    # TrainAndTest()
     # TrainFullFile()
-    # TestFullFile()
+    TestFullFile()
