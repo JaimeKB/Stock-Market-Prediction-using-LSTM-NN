@@ -1,6 +1,3 @@
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
 from flask import Flask
 from flask import render_template
 from flask import jsonify
@@ -106,3 +103,4 @@ def uploadCSVFile():
 if __name__ == "__main__":
     myTempdir = tempfile.gettempdir()
     app.run(debug=True)
+# app.run(debug=True, port=5000, host='0.0.0.0')
