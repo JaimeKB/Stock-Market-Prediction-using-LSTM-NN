@@ -59,7 +59,7 @@ def ValidateYahooCSVData(filePath, filename):
             return("Fail", 0)
         else:
             for index, row in dataSet.iterrows():
-                validateDate(row['Date'])             
+                # validateDate(row['Date'])             
                 if(pd.isna(row['Open']) or pd.isna(row['High']) or pd.isna(row['Low']) or pd.isna(row['Close']) or pd.isna(row['Volume'])):
                     print("Null data in file")
                     return("Fail", 0)

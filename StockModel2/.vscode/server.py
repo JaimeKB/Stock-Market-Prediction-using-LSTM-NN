@@ -17,19 +17,28 @@ import os
 
 app = Flask(__name__)
 
-def to_matrix(l):
-    return [l[i:i+7] for i in range(0, len(l), 7)]
-
 @app.route("/")
-def hello():
+def IndexPage():
+    """
+    Render the index/home template
+    """
     return render_template('Index.html')
 
 @app.route("/TermsOfService")
 def Redirect():
+    """
+    Render the terms of service and use template
+    """
     return render_template('TermsOfService.html')
 
 @app.route('/uploadajax', methods = ['POST'])
-def upldfile():
+def uploadfile():
+    """
+    When a user uploads their own forecasting model, store it for use.
+    Test the model using pre-set testing data.
+    Create a forecast with application model as well to compare.
+    Delete the uploaded model and return forecast data to user.
+    """
     if request.method == 'POST':
         uploaded_file = request.files['file']
         if uploaded_file.filename != '':
@@ -44,6 +53,9 @@ def upldfile():
                 "dateRange": dateRange.tolist()
             }
 
+            if os.path.exists('C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/userModels/userModel.h5'):
+                os.remove('C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/userModels/userModel.h5')
+
             return jsonify(testDict)
 
     return("Success")
@@ -51,6 +63,12 @@ def upldfile():
 
 @app.route('/uploadCSV', methods = ['POST'])
 def uploadCSVFile():
+    """
+    When a user uploads a CSV of historical stock data, save the file for use.
+    Validate the data with integer/float checks and data length.
+    Run data through application model to create a forecast.
+    Delete CSV file, and return forecast to user.
+    """
     if request.method == 'POST':
         uploaded_file = request.files['CSVfile']
         if uploaded_file.filename != '':
@@ -74,39 +92,13 @@ def uploadCSVFile():
                     "dataLength": len(testData)
                 }
 
-                return jsonify(testDict)
+                if os.path.exists("C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/userCSVFiles/userCSV.csv"):
+                    os.remove("C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/userCSVFiles/userCSV.csv")
 
+                return jsonify(testDict)
             else:
                 return("Uploaded file was unusable!")
-
     return("Success")
-
-
-
-
-# @app.route('/stockDataFile/<stockData>',methods=['GET'])
-# def ProcessStockData(stockData):
-#     print("Stock data recieved:")
-#     stockData = stockData.split(",")
-#     twoDStockData = to_matrix(stockData)
-#     twoDStockData.pop(0)
-#     df = DataFrame (twoDStockData,columns=['Date','Open','High','Low','Close','Adj Close','Volume'])
-
-#     testData = OrganiseTestingData(df)
-#     predictedData = PredictData(testData)
-
-#     dateRange = df.loc[60:, 'Date']
-
-#     testDict = {
-#         "message": "Data was received!",
-#         "predictedData": predictedData.tolist(),
-#         "testData": testData.tolist(),
-#         "dateRange": dateRange.tolist(),
-#         "dataLength": len(testData)
-#     }
-
-#     return jsonify(testDict)
-
 
 if __name__ == "__main__":
     app.run()
