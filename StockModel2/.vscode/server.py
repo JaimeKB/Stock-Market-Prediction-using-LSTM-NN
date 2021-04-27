@@ -14,6 +14,8 @@ from TestModel import RunOwn
 import numpy as np
 import pandas as pd
 import os
+import tempfile
+
 
 app = Flask(__name__)
 
@@ -42,8 +44,8 @@ def uploadfile():
     if request.method == 'POST':
         uploaded_file = request.files['file']
         if uploaded_file.filename != '':
-            uploaded_file.save(os.path.join('C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/userModels', "userModel.h5"))
-            predictedData, dateRange = TestUserModel()
+            uploaded_file.save(os.path.join(myTempdir, "Model_Test.h5"))
+            predictedData, dateRange = TestUserModel(myTempdir)
 
             myModelPredictedData = RunOwn()
 
@@ -53,8 +55,8 @@ def uploadfile():
                 "dateRange": dateRange.tolist()
             }
 
-            if os.path.exists('C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/userModels/userModel.h5'):
-                os.remove('C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/userModels/userModel.h5')
+            if os.path.exists(os.path.join(myTempdir, "Model_Test.h5")):
+                os.remove(os.path.join(myTempdir, "Model_Test.h5"))
 
             return jsonify(testDict)
 
@@ -72,13 +74,14 @@ def uploadCSVFile():
     if request.method == 'POST':
         uploaded_file = request.files['CSVfile']
         if uploaded_file.filename != '':
-            uploaded_file.save(os.path.join('C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/userCSVFiles', "userCSV.csv"))
 
-            result, length = ValidateYahooCSVData("C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/userCSVFiles", "userCSV.csv")
+            uploaded_file.save(os.path.join(myTempdir, "userCSV.csv"))
+           
+            result, length = ValidateYahooCSVData(myTempdir, "userCSV.csv")
 
             if(result == "Pass"):
 
-                df=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/userCSVFiles/userCSV.csv")
+                df=pd.read_csv(os.path.join(myTempdir, "userCSV.csv"))
                 testData = OrganiseTestingData(df)
                 predictedData = PredictData(testData)
 
@@ -92,8 +95,8 @@ def uploadCSVFile():
                     "dataLength": len(testData)
                 }
 
-                if os.path.exists("C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/userCSVFiles/userCSV.csv"):
-                    os.remove("C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/userCSVFiles/userCSV.csv")
+                if os.path.exists(os.path.join(myTempdir, "userCSV.csv")):
+                    os.remove(os.path.join(myTempdir, "userCSV.csv"))
 
                 return jsonify(testDict)
             else:
@@ -101,4 +104,5 @@ def uploadCSVFile():
     return("Success")
 
 if __name__ == "__main__":
-    app.run()
+    myTempdir = tempfile.gettempdir()
+    app.run(debug=True)

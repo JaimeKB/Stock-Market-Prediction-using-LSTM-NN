@@ -15,14 +15,15 @@ from sklearn.model_selection import train_test_split
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.models import load_model
 from DataValidation import OrganiseTestingData
+import os
 
 def PredictData(x_test): 
 
-    model = load_model('C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/Model_Test.h5')
+    model = load_model(os.path.join(os.path.dirname(__file__), "./Model_Test.h5"))
     sc = MinMaxScaler(feature_range = (0, 1))
-    storedTrainingSet = pd.read_csv('C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/trainingData.txt', header = None)
+    storedTrainingSet = pd.read_csv(os.path.join(os.path.dirname(__file__), "../trainingData.txt"), header = None)
     trainingDataShape = storedTrainingSet.shape
-    trainingData = np.loadtxt("C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/trainingData.txt").reshape(trainingDataShape[0], trainingDataShape[1])
+    trainingData = np.loadtxt(os.path.join(os.path.dirname(__file__), "../trainingData.txt")).reshape(trainingDataShape[0], trainingDataShape[1])
     sc.fit_transform(trainingData)
 
     predicted_stock_price = model.predict(x_test)
@@ -30,17 +31,19 @@ def PredictData(x_test):
     
     return predicted_stock_price
 
-def TestUserModel():
-    model = load_model("C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/userModels/userModel.h5")
+def TestUserModel(myTempdir):
+    model = load_model(os.path.join(myTempdir, "Model_Test.h5"))
 
-    df=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/TeslaTestData.csv")
+    os.path.join(os.path.dirname(__file__), "../trainingData.txt")
+
+    df=pd.read_csv(os.path.join(os.path.dirname(__file__), "../TeslaTestData.csv"))
     dateRange = df.loc[60:, 'Date']
     x_test = OrganiseTestingData(df)
 
     sc = MinMaxScaler(feature_range = (0, 1))
-    storedTrainingSet = pd.read_csv('C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/trainingData.txt', header = None)
+    storedTrainingSet = pd.read_csv(os.path.join(os.path.dirname(__file__), "../trainingData.txt"), header = None)
     trainingDataShape = storedTrainingSet.shape
-    trainingData = np.loadtxt("C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/trainingData.txt").reshape(trainingDataShape[0], trainingDataShape[1])
+    trainingData = np.loadtxt(os.path.join(os.path.dirname(__file__), "../trainingData.txt")).reshape(trainingDataShape[0], trainingDataShape[1])
     sc.fit_transform(trainingData)
 
     predicted_stock_price = model.predict(x_test)
@@ -51,15 +54,17 @@ def TestUserModel():
 
 def RunOwn():
 
-    model = load_model('C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/Model_Test.h5')
+    model = load_model(os.path.join(os.path.dirname(__file__), "./Model_Test.h5"))
 
-    df=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/TeslaTestData.csv")
+
+
+    df=pd.read_csv(os.path.join(os.path.dirname(__file__), "../TeslaTestData.csv"))
     x_test = OrganiseTestingData(df)
 
     sc = MinMaxScaler(feature_range = (0, 1))
-    storedTrainingSet = pd.read_csv('C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/trainingData.txt', header = None)
+    storedTrainingSet = pd.read_csv(os.path.join(os.path.dirname(__file__), "../trainingData.txt"), header = None)
     trainingDataShape = storedTrainingSet.shape
-    trainingData = np.loadtxt("C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/trainingData.txt").reshape(trainingDataShape[0], trainingDataShape[1])
+    trainingData = np.loadtxt(os.path.join(os.path.dirname(__file__), "../trainingData.txt")).reshape(trainingDataShape[0], trainingDataShape[1])
     sc.fit_transform(trainingData)
 
     predicted_stock_price = model.predict(x_test)
