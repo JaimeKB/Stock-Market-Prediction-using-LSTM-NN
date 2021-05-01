@@ -250,14 +250,14 @@ def TestPrediction(dataset, trainingDataLength, n_past, n_future, n_future_value
     testYPoints = np.array(testPredict)
 
     for i in range(len(testXPoints)):
-        PlotData(testXPoints[i][0], testYPoints[i][0], "red", "Testing Data")
+        PlotData(testXPoints[i], testYPoints[i], "red", "Testing Data")
 
 
     # PlotData(testXPoints, testYPoints, "red", "Testing Data")
 
 
 def TrainAndTest():
-    dataset=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/stockTesting/TSLA.csv")
+    dataset=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/TSLA.csv")
 
     del dataset['Adj Close']
 
@@ -276,7 +276,7 @@ def TrainAndTest():
     ### Data range for number of days to train with, and number of days to predict forward
     n_future = 1            # days forward from last day in history data
     n_future_values = 5     # number of days in to predict in vector format
-    n_past = 1             # number of days to look at in the past
+    n_past = 60             # number of days to look at in the past
     
 
     print("dataset shape {}".format(dataset.shape))

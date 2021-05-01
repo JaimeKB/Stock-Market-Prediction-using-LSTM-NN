@@ -27,30 +27,48 @@ def ShowGraph():
     plt.show()
 
 def PlotData(XValues, YValues, colour, dataTitle):
-    plt.plot(XValues, YValues, marker = 'o', color = colour, label = dataTitle)
-    # plt.plot(XValues, YValues, marker = 'o', color = colour)
+    # plt.plot(XValues, YValues, marker = 'o', color = colour, label = dataTitle)
+    plt.plot(XValues, YValues, marker = 'o', color = colour)
     # plt.plot(XValues, YValues, color = colour, label = dataTitle)
 
+def EvaluateForecast(actual, predicted):
 
-def PrepTrainingData(n_past, n_future, n_future_values, trainingData):
+    mse = mean_squared_error(actual[:], predicted[:])
+    rmse = sqrt(mse)
+
+    print("mean squred error: " + str(mse))
+    print("root mean squared error: " + str(rmse))
+
+    increase = sum(actual[:]) - sum(predicted[:])
+    increase = increase / sum(actual[:])
+    print("Percentage change {}".format(abs(increase * 100)))
+
+def TestingMultiStepDates(dateDataFrame, n_past, n_future, trainingDataLength, n_future_values):
+    dates = dateDataFrame.tolist()
+    multiStepDates = []
+
+    for i in range(n_past + 2, len(dates) - n_future - n_future_values + 2):
+        multiStepDates.append(dates[i + n_future - 1:i + n_future + n_future_values - 1])
+    
+    return multiStepDates
+
+def PrepTestingData(n_past, n_future, n_future_values, trainingData):
     
     ### Set up data indexing for dependent and independent variables
-    x_train = []
-    y_train = []
+    x_test = []
+    y_test = []
 
-    ### Use past 50 days of all 5 columns to predict the next day of the 4th column (close)
-    for i in range(n_past, len(trainingData) - n_future - n_future_values):
-        x_train.append(trainingData[i - n_past:i, 0:trainingData.shape[1]])
-        y_train.append(trainingData[i + n_future - 1:i + n_future + n_future_values, 3])
-        # print("x train {}".format(trainingData[i - n_past:i, 0:trainingData.shape[1]]))
-        # print("y train {}".format(trainingData[i + n_future - 1:i + n_future + n_future_values, 3]))
+    ### Use past 60 days of all 5 columns to predict the next 5 days of the 4th column (close)
+    for i in range(n_past, len(trainingData) - n_future_values + 1):
+        x_test.append(trainingData[i - n_past:i, 0:trainingData.shape[1]])
+        y_test.append(trainingData[i + n_future - 1:i + n_future + n_future_values - 1, 3])
 
-    x_train, y_train = np.array(x_train), np.array(y_train)
+    x_test, y_test = np.array(x_test), np.array(y_test)
 
-    print("x_train shape =={}".format(x_train.shape))
-    print("y_train shape =={}".format(y_train.shape))
+    # print("x_train shape =={}".format(x_train.shape))
+    # print("y_train shape =={}".format(y_train.shape))
 
-    return x_train, y_train
+    return x_test, y_test
 
 
 def FormatTestingFileData(dataset):
@@ -61,7 +79,7 @@ def FormatTestingFileData(dataset):
 
     dataset['Date'] = pd.to_datetime(dataset['Date'], format="%Y/%m/%d")
 
-def MakeModel(n_past, x_train, y_train, n_future, layerOneHiddenUnits, layerTwoHiddenUnits, layerOneDropout, layerTwoDropout, numberOfEpochs):
+def MakeModel(n_past, x_train, y_train, n_future_values, layerOneHiddenUnits, layerTwoHiddenUnits, layerOneDropout, layerTwoDropout, numberOfEpochs):
 
     x_train, y_train = np.array(x_train), np.array(y_train)
 
@@ -72,8 +90,8 @@ def MakeModel(n_past, x_train, y_train, n_future, layerOneHiddenUnits, layerTwoH
     model.add(Dropout(layerOneDropout))
     model.add(LSTM(units=layerTwoHiddenUnits, return_sequences=False))
     model.add(Dropout(layerTwoDropout))
-    model.add(Dense(units=n_future, activation=None))
-    model.compile(loss='mean_squared_error', optimizer = 'adam')
+    model.add(Dense(units=n_future_values, activation=None))
+    model.compile(loss='mean_squared_error', optimizer = Adam(learning_rate=0.01))
 
     history = model.fit(x_train, y_train, epochs = numberOfEpochs, batch_size = 32)
 
@@ -159,7 +177,7 @@ def TrainModel(filePath, n_future, n_future_values, n_past, layerOneHiddenUnits,
     totalTrainingXSet, totalTrainingYSet = OrganiseDataset(filePath, n_future, n_future_values, n_past)
 
     ### Train Model
-    model = MakeModel(n_past, totalTrainingXSet, totalTrainingYSet, n_future, layerOneHiddenUnits, layerTwoHiddenUnits, layerOneDropout, layerTwoDropout, epochs)
+    model = MakeModel(n_past, totalTrainingXSet, totalTrainingYSet, n_future_values, layerOneHiddenUnits, layerTwoHiddenUnits, layerOneDropout, layerTwoDropout, epochs)
     model.save('C:/Users/Jaime Kershaw Brown/Documents/Final year project/MultivariateMultiStepModel.h5')  # creates a HDF5 file 'MultivariateMultiStepModel.h5'
 
 
@@ -174,7 +192,7 @@ def TestModel(dataset, n_future, n_future_values, n_past):
     PlotData(ActualXPoints, ActualYPoints, "blue", "Actual Data")
 
     # number of days to look at in the past
-    n_day_to_predict = 1
+    n_day_to_predict = 100
 
     print("dataset shape {}".format(dataset.shape))
    
@@ -188,25 +206,26 @@ def TestModel(dataset, n_future, n_future_values, n_past):
 
     xTest, yTest = PrepTestingData(n_past, n_future, n_future_values, testingData)
     testPredict = model.predict(xTest)
-
+ 
     ### Test predictor scalar
 
     scalerPredict = MinMaxScaler(feature_range = (0, 1))
     predictValues = dataset.iloc[trainingDataLength: math.floor(len(dataset.iloc[:, 1:2])) -1, 4].values
-    print(dataset.tail(5))
-    print("PREDICT VALUES")
-    print(predictValues)
+
     predictValues = predictValues.reshape(-1, 1)
     scalerPredict.fit_transform(predictValues)
 
     testPredict = scalerPredict.inverse_transform(testPredict)
     testActual = scalerPredict.inverse_transform(yTest)
 
+    print(testActual)
+    print(testPredict)
+
     EvaluateForecast(testActual, testPredict)
 
  
 
-    testDates = dataset['Date'][trainingDataLength + n_past + n_future:]
+    testDates = TestingMultiStepDates(dataset['Date'][trainingDataLength:], n_past, n_future, trainingDataLength, n_future_values)
     # testDates = testDates.iloc[1:]
 
     # newDay = AddExtraDay(testDates.iloc[-1])
@@ -215,7 +234,13 @@ def TestModel(dataset, n_future, n_future_values, n_past):
     # testXPoints = np.array(dataset['Date'][trainingDataLength + n_past + n_future:])
     testXPoints = np.array(testDates)
     testYPoints = np.array(testPredict)
-    PlotData(testXPoints, testYPoints, "red", "Testing Data")
+
+    for i in range(len(testXPoints)):
+        PlotData(testXPoints[i], testYPoints[i], "red", "Testing Data")
+
+    plt.xticks(np.arange(0, len(ActualXPoints), 200))
+
+    # PlotData(testXPoints, testYPoints, "red", "Testing Data")
 
 
     ### Single value prediction
@@ -238,12 +263,12 @@ if __name__ == "__main__":
     # Data range for number of days to train with, and number of days to predict forward
     n_future = 1            # days forward from last day in history data
     n_future_values = 5     # number of days in to predict in vector format
-    n_past = 60             # number of days to look at in the past
+    n_past = 20             # number of days to look at in the past
     
-    layerOneHiddenUnits = 50
-    layerTwoHiddenUnits = layerOneHiddenUnits
-    layerOneDropout = 0.05
-    layerTwoDropout = layerOneDropout
+    layerOneHiddenUnits = 100
+    layerTwoHiddenUnits = 50
+    layerOneDropout = 0.2
+    layerTwoDropout = 0.4
     epochs = 5
 
     testingData=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/TSLA.csv")

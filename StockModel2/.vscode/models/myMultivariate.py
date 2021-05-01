@@ -120,7 +120,7 @@ def TrainModel(n_past, x_train, y_train):
     model.add(Dense(units=1, activation=None))
     model.compile(loss='mean_squared_error', optimizer = Adam(learning_rate=0.01))
 
-    history = model.fit(x_train, y_train, epochs = 20, batch_size = 32)
+    history = model.fit(x_train, y_train, epochs = 30, batch_size = 32)
 
     # plt.plot(history.history['loss'], label='train')
     # plt.legend()
@@ -320,7 +320,7 @@ def TrainFullFile():
 
 def TestFullFile():
 
-    dataset=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/stockTesting/TSLA.csv")
+    dataset=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/TSLA.csv")
 
     del dataset['Adj Close']
 
@@ -341,7 +341,7 @@ def TestFullFile():
     n_future_values = 0     # number of days in to predict in vector format
     n_past = 60              # number of days to look at in the past
     
-    n_day_to_predict = 100
+    n_day_to_predict = 378
 
     print("dataset shape {}".format(dataset.shape))
     # trainingDataLength = math.floor(len(dataset.iloc[:, 1:2])*0.9)
@@ -352,7 +352,7 @@ def TestFullFile():
     scaler = MinMaxScaler(feature_range=(0,1))
     testingData = dataset.iloc[trainingDataLength:, 1:].values
     testingData = scaler.fit_transform(testingData)
-
+    print(testingData.shape)
     xTest, yTest = PrepTestingData(n_past, n_future, n_future_values, testingData)
     testPredict = model.predict(xTest)
 
@@ -360,9 +360,6 @@ def TestFullFile():
 
     scalerPredict = MinMaxScaler(feature_range = (0, 1))
     predictValues = dataset.iloc[trainingDataLength: math.floor(len(dataset.iloc[:, 1:2])) -1, 4].values
-    print(dataset.tail(5))
-    print("PREDICT VALUES")
-    print(predictValues)
     predictValues = predictValues.reshape(-1, 1)
     scalerPredict.fit_transform(predictValues)
 
@@ -392,13 +389,11 @@ def TestFullFile():
     #     PredictOneIteration(n_past, n_future, n_future_values, dataset.iloc[:i, :].values, model)
     #     # yTest.append(testingData[i + n_future - 1:i + n_future + n_future_values, 3])
 
-
-
     ShowGraph()
 
 
 if __name__ == "__main__":
 
     # TrainAndTest()
-    # TrainFullFile()
+    TrainFullFile()
     TestFullFile()
