@@ -11,6 +11,9 @@ My contact details: jaime.kershawbrown@students.plymouth.ac.uk
 
 Supervisor: David Walker
 
+## Architecture
+![Architecture Diagram](FYP_Architecture.png)
+
 
 ### Instructions for deploying on AWS:
 
