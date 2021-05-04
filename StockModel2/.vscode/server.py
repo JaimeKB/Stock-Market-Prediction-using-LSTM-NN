@@ -5,10 +5,6 @@ from flask import request
 from pandas import DataFrame
 from DataValidation import OrganiseTestingData
 from DataValidation import ValidateYahooCSVData
-from TestModel import PredictData
-from TestModel import TestUserModel
-from TestModel import RunOwn
-
 from ApplicationFunctions import TestFullFile
 from ApplicationFunctions import CompareModels
 
@@ -132,5 +128,5 @@ def uploadCSVFile():
 
 if __name__ == "__main__":
     myTempdir = tempfile.gettempdir()
-    app.run(debug=True)
-# app.run(debug=True, port=5000, host='0.0.0.0')
+    # app.run(debug=True)
+    app.run(debug=True, port=5000, host='0.0.0.0')
