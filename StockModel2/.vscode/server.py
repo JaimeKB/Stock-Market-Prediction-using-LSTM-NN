@@ -8,11 +8,14 @@ from DataValidation import ValidateYahooCSVData
 from TestModel import PredictData
 from TestModel import TestUserModel
 from TestModel import RunOwn
+
+from ApplicationFunctions import TestFullFile
+from ApplicationFunctions import CompareModels
+
 import numpy as np
 import pandas as pd
 import os
 import tempfile
-
 
 app = Flask(__name__)
 
@@ -42,14 +45,30 @@ def uploadfile():
         uploaded_file = request.files['file']
         if uploaded_file.filename != '':
             uploaded_file.save(os.path.join(myTempdir, "Model_Test.h5"))
-            predictedData, dateRange = TestUserModel(myTempdir)
 
-            myModelPredictedData = RunOwn()
+            dataset=pd.read_csv(os.path.join(os.path.dirname(__file__), "../TeslaTestData.csv"))
+
+            userModelYPoints, UMmse, UMrmse, UMmeanAverage, UMpercentageChange, ActualYPoints = CompareModels(myTempdir)
+
+            ActualX, ActualY, testXPoints, testYPoints, futureXPoints, futureYPoints, mse, rmse, meanAverage, percentageChange = TestFullFile(dataset, "Technology", 100)
+
+            dateRange = dataset[['Date']].tail(100)
+            dateRange = dateRange.loc[:, 'Date']
 
             testDict = {
-                "predictedData": predictedData.tolist(),
-                "myModelPredictedData": myModelPredictedData.tolist(),
-                "dateRange": dateRange.tolist()
+                "message": "Data was received!",
+                "ActualX": dateRange.tolist(),
+                "ActualYPoints": ActualYPoints.tolist(),
+                "testYPoints": testYPoints.tolist(),
+                "userModelYPoints": userModelYPoints.tolist(),
+                "mse": mse,
+                "rmse": rmse,
+                "meanAverage": meanAverage,
+                "percentageChange": percentageChange,
+                "UMmse": UMmse,
+                "UMrmse": UMrmse,
+                "UMmeanAverage": UMmeanAverage,
+                "UMpercentageChange": UMpercentageChange
             }
 
             if os.path.exists(os.path.join(myTempdir, "Model_Test.h5")):
@@ -70,6 +89,8 @@ def uploadCSVFile():
     """
     if request.method == 'POST':
         uploaded_file = request.files['CSVfile']
+        sector = request.form['sector']
+
         if uploaded_file.filename != '':
 
             uploaded_file.save(os.path.join(myTempdir, "userCSV.csv"))
@@ -78,18 +99,27 @@ def uploadCSVFile():
 
             if(result == "Pass"):
 
-                df=pd.read_csv(os.path.join(myTempdir, "userCSV.csv"))
-                testData = OrganiseTestingData(df)
-                predictedData = PredictData(testData)
+                numberOfDaysToPredict = 30
 
-                dateRange = df.loc[60:, 'Date']
+                df=pd.read_csv(os.path.join(myTempdir, "userCSV.csv"))
+                
+                ActualX, ActualY, testXPoints, testYPoints, futureXPoints, futureYPoints, mse, rmse, meanAverage, percentageChange = TestFullFile(df, sector, numberOfDaysToPredict)
+            
+                dateRange = df[['Date']].tail(30)
+                dateRange = dateRange.loc[:, 'Date']
 
                 testDict = {
                     "message": "Data was received!",
-                    "predictedData": predictedData.tolist(),
-                    "testData": testData.tolist(),
-                    "dateRange": dateRange.tolist(),
-                    "dataLength": len(testData)
+                    "ActualX": dateRange.tolist(),
+                    "ActualY": ActualY.tolist(),
+                    "testXPoints": testXPoints.tolist(),
+                    "testYPoints": testYPoints.tolist(),
+                    "futureXPoints": futureXPoints.tolist(),
+                    "futureYPoints": futureYPoints.tolist(),
+                    "mse": mse,
+                    "rmse": rmse,
+                    "meanAverage": meanAverage,
+                    "percentageChange": percentageChange
                 }
 
                 if os.path.exists(os.path.join(myTempdir, "userCSV.csv")):
