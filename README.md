@@ -17,11 +17,11 @@ Supervisor: David Walker
 
 - open putty with saved AWS session
 
-- cd into below dir	
+- cd into below dir  	
 
 	/home/ubuntu/Stock-Market-Prediction-using-LSTM-NN/StockModel2/.vscode
 
-- create virtual environment
+- create virtual environment  
 
 	python3 -m venv venv
 
