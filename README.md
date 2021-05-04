@@ -15,30 +15,28 @@ Supervisor: David Walker
 ### AWS deployment
 
 
-0. open putty with saved AWS session
+- open putty with saved AWS session
 
-1. cd into below dir	
-/home/ubuntu/Stock-Market-Prediction-using-LSTM-NN/StockModel2/.vscode
+- cd into below dir	
+  /home/ubuntu/Stock-Market-Prediction-using-LSTM-NN/StockModel2/.vscode
 
-2. create virtual environment
-python3 -m venv venv
+- create virtual environment
+  python3 -m venv venv
 
-3. activate virtual environment
-source venv/bin/activate
+- activate virtual environment
+  source venv/bin/activate
 
-4. 
-git checkout to correct branch
+- go to correct branch
+  git checkout <correct branch>
 
-5. 
-pip install -r requirements.txt
+- install required libraries
+  pip install -r requirements.txt
 
-6. if new installs needed 
-pip freeze > requirements.txt 
+- if new installs needed then pip install and run line below
+  pip freeze > requirements.txt 
 
-7. to start
-python3 server.py 
+- to start application
+  python3 server.py 
 
-8. go to link below to view deployment
-ec2-54-201-179-80.us-west-2.compute.amazonaws.com:5000
-
-Notes for improvements:
+- go to link below to view deployment
+  ec2-54-201-179-80.us-west-2.compute.amazonaws.com:5000
