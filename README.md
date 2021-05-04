@@ -47,4 +47,4 @@ Supervisor: David Walker
 
 - go to link below to view deployment, subject to change
 
-[click here](ec2-54-201-179-80.us-west-2.compute.amazonaws.com:5000)
+[click here](http://ec2-54-201-179-80.us-west-2.compute.amazonaws.com:5000)
