@@ -13,7 +13,7 @@ Supervisor: David Walker
 
 ## Architecture
 ![Architecture Diagram](FYP_Architecture.png)
-
+[Click here to edit diagram](https://app.diagrams.net/#Hjkershawbrown%2FStock-Market-Prediction-using-LSTM-NN%2Fmain%2FFYP_Architecture.png)
 
 ### Instructions for deploying on AWS:
 
