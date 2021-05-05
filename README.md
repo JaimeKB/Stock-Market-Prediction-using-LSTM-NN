@@ -12,6 +12,10 @@ My contact details: jaime.kershawbrown@students.plymouth.ac.uk
 
 Supervisor: David Walker
 
+# Link to todo list
+
+[To-do list for deployment + other](ToDo.md)
+
 ### AWS deployment
 
 
