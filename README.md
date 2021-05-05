@@ -16,6 +16,10 @@ Supervisor: David Walker
 
 [Click here to edit diagram](https://app.diagrams.net/#Hjkershawbrown%2FStock-Market-Prediction-using-LSTM-NN%2Fmain%2FFYP_Architecture.png)
 
+# Link to todo list
+
+[To-do list for deployment + other](ToDo.md)
+
 ### Instructions for deploying on AWS:
 
 
