@@ -6,13 +6,24 @@ and produce both a graphical and numerical prediction for the stock values, time
 
 Must install python before doing imports.
 
-Required imports: matplotlib
 
 My contact details: jaime.kershawbrown@students.plymouth.ac.uk
 
 Supervisor: David Walker
 
-### AWS deployment
+[click here](http://ec2-54-201-179-80.us-west-2.compute.amazonaws.com:5000)
+
+## Architecture
+![Architecture Diagram](FYP_Architecture.png)  
+
+[Click here to edit diagram](https://app.diagrams.net/#Hjkershawbrown%2FStock-Market-Prediction-using-LSTM-NN%2Fmain%2FFYP_Architecture.png)
+
+# Link to todo list
+
+[To-do list for deployment + other](ToDo.md)
+
+### Instructions for deploying on AWS:
+
 
 
 - open putty with saved AWS session
@@ -46,5 +57,3 @@ Supervisor: David Walker
  	python3 server.py 
 
 - go to link below to view deployment, subject to change
-
-[click here](http://ec2-54-201-179-80.us-west-2.compute.amazonaws.com:5000)
