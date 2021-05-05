@@ -294,7 +294,7 @@ $(document).ready(function(){
             chartDates = []
 
             for (x = 0; x < ActualX.length; x++) {
-              chartData.push(ActualX.slice(0, -13))
+              chartData.push(ActualX[x].slice(0, -13))
             }
 
             for (i = 0; i < userModelYPoints.length; i++) {
