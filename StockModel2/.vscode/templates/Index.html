@@ -294,7 +294,7 @@ $(document).ready(function(){
             chartDates = []
 
             for (x = 0; x < ActualX.length; x++) {
-              chartData.push(ActualX[x].slice(0, -13))
+              chartDates.push(ActualX[x].slice(0, -13))
             }
 
             for (i = 0; i < userModelYPoints.length; i++) {
@@ -302,7 +302,7 @@ $(document).ready(function(){
               chartData2.push(testYPoints[i][0])
             }
 
-            load2Charts(ActualX, ActualYPoints, chartData1, chartData2, rmse, percentageChange, UMrmse, UMpercentageChange)
+            load2Charts(chartDates, ActualYPoints, chartData1, chartData2, rmse, percentageChange, UMrmse, UMpercentageChange)
             $('html, body').animate({scrollTop:$(document).height()}, 'slow');
           },
     });
