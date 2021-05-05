@@ -291,6 +291,11 @@ $(document).ready(function(){
 
             chartData1 = []
             chartData2 = []
+            chartDates = []
+
+            for (x = 0; x < ActualX.length; x++) {
+              chartData.push(ActualX.slice(0, -13))
+            }
 
             for (i = 0; i < userModelYPoints.length; i++) {
               chartData1.push(userModelYPoints[i][0])
