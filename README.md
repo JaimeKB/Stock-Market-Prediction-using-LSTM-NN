@@ -11,8 +11,6 @@ My contact details: jaime.kershawbrown@students.plymouth.ac.uk
 
 Supervisor: David Walker
 
-[click here](http://ec2-54-201-179-80.us-west-2.compute.amazonaws.com:5000)
-
 ## Architecture
 ![Architecture Diagram](FYP_Architecture.png)  
 
@@ -23,8 +21,6 @@ Supervisor: David Walker
 [To-do list for deployment + other](ToDo.md)
 
 ### Instructions for deploying on AWS:
-
-
 
 - open putty with saved AWS session
 
@@ -57,3 +53,5 @@ Supervisor: David Walker
  	python3 server.py 
 
 - go to link below to view deployment, subject to change
+
+[click here](http://ec2-54-201-179-80.us-west-2.compute.amazonaws.com:5000)
