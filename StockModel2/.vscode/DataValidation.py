@@ -1,5 +1,4 @@
 import math
-import matplotlib.pyplot as plt
 import tensorflow.keras
 import pandas as pd
 import numpy as np
@@ -59,7 +58,7 @@ def ValidateYahooCSVData(filePath, filename):
             return("Fail", 0)
         else:
             for index, row in dataSet.iterrows():
-                validateDate(row['Date'])             
+                # validateDate(row['Date'])             
                 if(pd.isna(row['Open']) or pd.isna(row['High']) or pd.isna(row['Low']) or pd.isna(row['Close']) or pd.isna(row['Volume'])):
                     print("Null data in file")
                     return("Fail", 0)
@@ -72,116 +71,14 @@ def ValidateYahooCSVData(filePath, filename):
                     
     return("Pass", len(dataSet.index))
 
-def ValidateNasdaqData(filename):
-    """
-    Check Nasdaq csv data file follows required format and won't cause any crashes.
-    Required format: Date,Open,High,Low,Close,Volume,OpenInt
-    Must not have any missing fields
-    """
-    df=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/stock_comparison/nasdaq/"+filename)
-    dataSet = df.iloc[:]
-    fileResult = ""
-    print(dataSet)
-    for index, row in dataSet.iterrows():
-        # result = validateDate(row['Date']) 
-        if(row[' Close/Last'] == " N/A" or row[' Volume'] == " N/A" or row[' Open'] == " N/A" or row[' High'] == " N/A" or row[' Low'] == " N/A"):
-            pass
-        else:
-            data = [float(row[' Close/Last'][2:]), int(row[' Volume']), float(row[' Open'][2:]), float(row[' High'][2:]), float(row[' Low'][2:])]
-
-    # print(data)
-    # print(type(data[3]))
-    
-    #     result2 = validateNumbers(data)
-    #     if(result == "Fail" or result2 == "Fail"):
-    #         fileResult = "Fail"
-    # if(fileResult == "Fail"):
-    #     print("This file fails")
-    # else:
-    #     print("This file passes")    
-
-def ValidateTXTData(filename):
-    """
-    Check that data in txt file follows required format and won't cause any crashes.
-    Required format: Date,Open,High,Low,Close,Volume,OpenInt
-    Must not have any missing fields
-    """
-    fileResult = ""
-    if(os.stat('C:/Users/Jaime Kershaw Brown/Documents/Final year project/huge_stock_market_dataset/Stocks/'+filename).st_size == 0):
-        print("File is empty!")
-        fileResult = "Fail"
-    else:
-        dataSet = pd.read_csv('C:/Users/Jaime Kershaw Brown/Documents/Final year project/huge_stock_market_dataset/Stocks/'+filename, sep=",")
-        dataSet.columns = ["Date", "Open", "High", "Low", "Close", "Volume", "OpenInt"]
-        
-        if(len(dataSet.index) < 132):
-            print("Not enough data in file!")
-            fileResult = "Fail"
-        else:
-            for index, row in dataSet.iterrows():
-                validateDate(row['Date']) 
-                data = [row['Open'], row['High'], row['Low'], row['Close'], row['Volume']]        
-                result2 = validateNumbers(data)
-                if(result2 == "Fail"):
-                    fileResult = "Fail"
-
-    if(fileResult == "Fail"):
-        print("Fail")
-        return "Fail"
-    else:
-        return "Pass"
-
-
-def LoopThroughFiles():
-    """
-    Function to loop through files for validation
-    """
-    filePath = "C:/Users/Jaime Kershaw Brown/Documents/Final year project/stocks"
-    failedFiles = 0
-    passedFiles = 0
-    fileLineNumbers = 0
-    totalLineNumbers = 0
-    now = datetime.datetime.now()
-
-    StartTime = now.strftime("%H:%M:%S")
-
-    directory = os.fsencode(filePath)
-    for file in os.listdir(directory):
-        filename = os.fsdecode(file)
-        if filename.endswith(".csv"): 
-            print(filename)
-            result, fileLineNumbers = ValidateYahooCSVData(filePath, filename)
-            if(result == "Fail"):
-                print("This file fails")
-                failedFiles +=1
-                if os.path.exists(filePath+"/"+filename):
-                    os.remove(filePath+"/"+filename)
-                else:
-                    print("The file does not exist")
-            else:
-                print("this file passes")
-                passedFiles +=1
-                totalLineNumbers += fileLineNumbers
-                fileLineNumbers = 0
-        else:
-            pass
-
-    now = datetime.datetime.now()
-    endTime = now.strftime("%H:%M:%S")
-
-    print("Start Time =", StartTime)
-    print("End Time =", endTime)
-    print("Passed files:", passedFiles)
-    print("Failed files:", failedFiles)
-    print("Total line numbers:", totalLineNumbers)
 
 def OrganiseTestingData(df): 
 
-    storedTrainingSet = pd.read_csv('C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/trainingData.txt', header = None)
+    storedTrainingSet = pd.read_csv(os.path.join(os.path.dirname(__file__), "../trainingData.txt"), header = None)
     trainingDataShape = storedTrainingSet.shape
 
     sc = MinMaxScaler(feature_range = (0, 1))
-    trainingData = np.loadtxt("C:/Users/Jaime Kershaw Brown/Documents/Final year project/Stock-Market-Prediction-using-LSTM-NN/StockModel2/trainingData.txt").reshape(trainingDataShape[0], trainingDataShape[1])
+    trainingData = np.loadtxt(os.path.join(os.path.dirname(__file__), "../trainingData.txt")).reshape(trainingDataShape[0], trainingDataShape[1])
     sc.fit_transform(trainingData)
     testingDataLength = math.floor(len(df.iloc[:, 1:2]))
 
@@ -204,6 +101,6 @@ def OrganiseTestingData(df):
 
     return x_test
 
-
 if __name__ == "__main__":
-    LoopThroughFiles()
+    # LoopThroughFiles()
+    pass

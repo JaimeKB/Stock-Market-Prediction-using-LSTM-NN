@@ -11,18 +11,13 @@ html {
 }
 
 body {
-  /* background: rgb(250,250,250); */
   background: linear-gradient(180deg, rgba(250,250,250,1) 0%, rgba(230,254,255,1) 100%);
-  /* overflow: hidden; */
 
 }
 
 #plotContainer {
     max-height: 300px;
-    text-align: right;
-    /* float: right; */
-
-    
+    text-align: right;    
 }
 
 canvas{
@@ -31,19 +26,12 @@ canvas{
   height:700px !important;
 }
 
-#myChart {
-  /* background-color: black;
-  color: white; */
-}
-
 .myTitle {
     text-align: center;
     padding-top: 10px;
     margin-bottom: 20px;
-    /* color: rgb(255, 0, 0); */
     background-color: rgb(233, 253, 255);
     border-bottom: 2px solid #b4b4b4;
-    /* outline: #9e9e9e solid 10px; */
 }
 
 .disclamer {
@@ -54,7 +42,6 @@ canvas{
   padding-left: 10px;
   padding-right: 10px;
   position: relative;
-  /* right: 15; */
   margin-top: 30px;
 }
 
@@ -66,7 +53,6 @@ canvas{
   padding-left: 10px;
   padding-right: 10px;
   position: relative;
-  /* right: 15; */
   margin-top: 30px;
 }
 
@@ -108,10 +94,6 @@ canvas{
             }
           }
 
-
-////////////////////
-
-
 var obj_csv = {
     size:0,
     dataFile:[]
@@ -144,7 +126,7 @@ function parseData(data){
 
 }
 
-function loadChart(xDatelabels, yStockData) {
+function loadPredictionChart(chartDates, ActualY, chartData, mse, rmse, meanAverage, percentageChange) {
 
  
 $('#myChart').remove(); // this is my <canvas> element
@@ -153,42 +135,72 @@ $('#canvasHolder').append('<canvas id="myChart"></canvas>');
   let ctx = document.getElementById('myChart').getContext('2d');
   let myChart = new Chart(ctx, {
       type: 'line',
+      options: {
+        title: {
+            display: true,
+            text: 'Mean Square Error: ' + (mse) + ', Root Mean Square Error: ' + (rmse) + ', Mean Error Average: ' + (meanAverage) + ', Percentage Difference: ' + (percentageChange)
+        }
+      }, 
       data: {
-          labels: xDatelabels,
-          datasets: [{
-              label: 'Stock price predictions',
-              data: yStockData,
-              fill: false,
-              backgroundColor: 'rgba(255, 99, 132, 0.2)',
-              borderColor: 'rgba(255, 99, 132, 1)',
-              borderWidth: 1
-          }]
-      },
-  });
-}
-
-function load2Charts(xDatelabels, yStockData1, yStockData2) {
-
-$('#myChart').remove(); // this is my <canvas> element
-$('#canvasHolder').append('<canvas id="myChart"></canvas>');
-
-let ctx = document.getElementById('myChart').getContext('2d');
-  let myChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-          labels: xDatelabels,
+          labels: chartDates,
           datasets: [
             {
-              label: "User's model Stock price predictions",
-              data: yStockData1,
+              label: "Actual stock data",
+              data: ActualY,
               fill: false,
               backgroundColor: 'rgba(222, 17, 2, 0.2)',
               borderColor: 'rgba(222, 17, 2, 1)',
               borderWidth: 1
             },
             {
-              label: "Software's model Stock price predictions",
-              data: yStockData2,
+              label: "Predicted stock data",
+              data: chartData,
+              fill: false,
+              backgroundColor: 'rgba(45, 5, 227, 0.2)',
+              borderColor: 'rgba(45, 5, 227, 1)',
+              borderWidth: 1
+            }
+        ]
+      },
+  });
+}
+
+function load2Charts(xDatelabels, actualStockYValues, predictedYValuesOne, predictedValuesTwo, rmse, percentageChange, UMrmse, UMpercentageChange) {
+
+$('#myChart').remove(); 
+$('#canvasHolder').append('<canvas id="myChart"></canvas>');
+
+let ctx = document.getElementById('myChart').getContext('2d');
+  let myChart = new Chart(ctx, {
+      type: 'line',
+      options: {
+        title: {
+            display: true,
+            text: 'Application Root Mean Square Error: ' + (rmse) + ', Application Percentage Difference: ' + (percentageChange) + ' - User Model Root Mean Square Error: ' + (UMrmse) + ', User Model Percentage Difference: ' + (UMpercentageChange)
+        }
+      }, 
+      data: {
+          labels: xDatelabels,
+          datasets: [
+            {
+              label: "Actual Stock Values",
+              data: actualStockYValues,
+              fill: false,
+              backgroundColor: 'rgba(0, 100, 0, 0.2)',
+              borderColor: 'rgba(0, 100, 0, 1)',
+              borderWidth: 1
+            },
+            {
+              label: "User's model Stock price predictions",
+              data: predictedYValuesOne,
+              fill: false,
+              backgroundColor: 'rgba(222, 17, 2, 0.2)',
+              borderColor: 'rgba(222, 17, 2, 1)',
+              borderWidth: 1
+            },
+            {
+              label: "Application's model Stock price predictions",
+              data: predictedValuesTwo,
               fill: false,
               backgroundColor: 'rgba(45, 5, 227, 0.2)',
               borderColor: 'rgba(45, 5, 227, 1)',
@@ -212,26 +224,43 @@ $(document).ready(function(){
         processData: false,
         success: function(dataDict) {
             message = dataDict['message']
-            predictedData = dataDict['predictedData']
-            testData = dataDict['testData']
-            dateRange = dataDict['dateRange']
-            dataLength = dataDict['dataLength']                      
+            ActualX = dataDict['ActualX']
+            ActualY = dataDict['ActualY']
+            testXPoints = dataDict['testXPoints']
+            testYPoints = dataDict['testYPoints']
+            futureXPoints = dataDict['futureXPoints']
+            futureYPoints = dataDict['futureYPoints']
+            mse = dataDict['mse']
+            rmse = dataDict['rmse']
+            meanAverage = dataDict['meanAverage']
+            percentageChange = dataDict['percentageChange']
 
             chartData = []
+            chartDates = []
 
-            for (i = 0; i < predictedData.length; i++) {
-              chartData.push(predictedData[i][0])
+            for (i = 0; i < ActualX.length; i++) {
+              chartDates.push(ActualX[i].slice(0, -13))
+            }
+            for (i = 0; i < futureXPoints.length; i++) {
+              chartDates.push(futureXPoints[i].slice(0, -13))
             }
 
-            loadChart(dateRange.slice(0, 90), chartData.slice(0, 90))
+            for (i = 0; i < testYPoints.length; i++) {
+              chartData.push(testYPoints[i][0])
+            }
+            for (i = 0; i < futureYPoints.length; i++) {
+              chartData.push(futureYPoints[i])
+            }
+
+            loadPredictionChart(chartDates, ActualY, chartData, mse, rmse, meanAverage, percentageChange)
             $('html, body').animate({scrollTop:$(document).height()}, 'slow');
         },
     });
-
   });
 
   $('#upload-h5-file-btn').click(function() {
     var form_data = new FormData($('#upload-file')[0]);
+
     $.ajax({
         type: 'POST',
         url: '/uploadajax',
@@ -242,31 +271,38 @@ $(document).ready(function(){
         success: function(dataDict) {
             console.log('Success!');
 
-            predictedData = dataDict['predictedData']
-            myModelPredictedData = dataDict['myModelPredictedData']
-            dateRange = dataDict['dateRange']
+            ActualX = dataDict['ActualX']
+            ActualYPoints = dataDict['ActualYPoints']
+            testYPoints = dataDict['testYPoints']
+            userModelYPoints = dataDict['userModelYPoints']
+            mse = dataDict['mse']
+            rmse = dataDict['rmse']
+            meanAverage = dataDict['meanAverage']
+            percentageChange = dataDict['percentageChange']
+            UMmse = dataDict['UMmse']
+            UMrmse = dataDict['UMrmse']
+            UMmeanAverage = dataDict['UMmeanAverage']
+            UMpercentageChange = dataDict['UMpercentageChange']
+
+            console.log(ActualX)
+            console.log(ActualYPoints)
+            console.log(userModelYPoints)
+            console.log(testYPoints)
 
             chartData1 = []
             chartData2 = []
 
-            for (i = 0; i < predictedData.length; i++) {
-              chartData1.push(predictedData[i][0])
-              chartData2.push(myModelPredictedData[i][0])
+            for (i = 0; i < userModelYPoints.length; i++) {
+              chartData1.push(userModelYPoints[i][0])
+              chartData2.push(testYPoints[i][0])
             }
 
-            load2Charts(dateRange.slice(0, 150), chartData1.slice(0, 150), chartData2.slice(0, 150))
+            load2Charts(ActualX, ActualYPoints, chartData1, chartData2, rmse, percentageChange, UMrmse, UMpercentageChange)
             $('html, body').animate({scrollTop:$(document).height()}, 'slow');
           },
     });
   });
 });
-
-
-
-
-
-///////////////////////////
-
 
         </script>
 
@@ -325,24 +361,31 @@ $(document).ready(function(){
               <label for="file">Select a CSV file</label>
               <input name="CSVfile" type="file" id="CSVInput" disabled>
               <button id="upload-CSV-file-btn" type="button" disabled>Upload</button>
+              <select name="sector" id="sector">
+                <option value="BasicIndustries">Basic Industries</option>
+                <option value="CapitalGoods">Capital Goods</option>
+                <option value="ConsumerDurables">Consumer Durables</option>
+                <option value="ConsumeNonDurables">Consume Non-Durables</option>
+                <option value="ConsumerServices">Consumer Services</option>
+                <option value="Energy">Energy</option>
+                <option value="Finance">Finance</option>
+                <option value="HealthCare">Health Care</option>
+                <option value="Miscellaneous">Miscellaneous</option>
+                <option value="PublicUtilities">Public Utilities</option>
+                <option value="Technology">Technology</option>
+                <option value="Transport">Transport</option>
+              </select>
         </form>
 
         <form id="upload-file" method="post" enctype="multipart/form-data">
-              <label for="file">Select a h5 file</label>
+              <label for="file">Select a model.h5 file</label>
               <input name="file" type="file" id="modelInput" disabled>
               <button id="upload-h5-file-btn" type="button" disabled>Upload</button>
         </form>
       </div>
       
       <div id="canvasHolder">
-        <!-- <canvas id="myChart"></canvas> -->
       </div>
-
-        
-
-        <!-- <div id="plotContainer"> -->
-            <!-- <canvas id="myChart" width="300" height="300"></canvas> -->
-        <!-- </div> -->
 
     </body>
 
