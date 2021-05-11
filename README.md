@@ -63,6 +63,12 @@ Supervisor: David Walker
 
 	`nohup python3 server.py > logtext.txt 2>&1 &`
 
+- to view log output, cd to below directory, and type the following command.
+
+	`/home/ubuntu/Stock-Market-Prediction-using-LSTM-NN/StockModel2/.vscode`
+
+	`tail -f logtext.txt`
+
 - To find and kill process:
 
 	`ps aux | grep python`
@@ -80,7 +86,7 @@ Supervisor: David Walker
 	nohup
 	ps
 	grep
-
+	tail
 
 ## Instructions for testing application:
 
