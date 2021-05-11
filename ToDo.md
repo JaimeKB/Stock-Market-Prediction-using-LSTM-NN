@@ -1,6 +1,7 @@
 # To do list to improve AWS deployment
 
-## Keep the README updated
+## ~~Keep the README updated~~
+
 - Should have build instructions
 - Should have test instructions
 - Should have deploy instructions
@@ -9,7 +10,7 @@
 
 ## Containerisation and orcarisation 
 
-## SSH session management
+## ~~SSH session management~~
 - Run as a service
 
 ## Domain name
