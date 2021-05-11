@@ -55,13 +55,32 @@ Supervisor: David Walker
 
 	`pip freeze > requirements.txt`
 
-- to start application
+- to start application for testing
 
     `python3 server.py`
+
+- to start application in background, run below line:
+
+	`nohup python3 server.py > logtext.txt 2>&1 &`
+
+- To find and kill process:
+
+	`ps aux | grep python`
+
+	`kill -9 <INSERT PROCESS ID>`
 
 - go to link below to view deployment, subject to change
 
 [click here](http://ec2-54-201-179-80.us-west-2.compute.amazonaws.com:5000)
+
+ - View manual pages using below command, followed by the name of linux command
+
+	`man <INSERT NAME>`
+	kill
+	nohup
+	ps
+	grep
+
 
 ## Instructions for testing application:
 
