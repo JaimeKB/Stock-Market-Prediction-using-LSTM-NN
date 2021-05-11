@@ -25,7 +25,7 @@ from pandas.plotting import lag_plot
 from statsmodels.tsa.arima_model import ARIMA
 from sklearn.metrics import mean_squared_error
 from math import sqrt
-df=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/TSLA.csv")
+df=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/stockTesting/MRO.csv")
 
 # plt.figure()
 # lag_plot(df['Open'], lag=3)
@@ -39,7 +39,7 @@ df=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/TSLA.c
 # plt.ylabel("price")
 # plt.show()
 
-train_data, test_data = df[0:int(len(df)*0.7)], df[int(len(df)*0.7):]
+train_data, test_data = df[0:int(len(df)*0.9)], df[int(len(df)*0.9):]
 training_data = train_data['Close'].values
 test_data = test_data['Close'].values
 history = [x for x in training_data]
@@ -60,7 +60,12 @@ rmse = sqrt(mse)
 print("mean squred error: " + str(mse))
 print("root mean squared error: " + str(rmse))
 
-test_set_range = df[int(len(df)*0.7):].index
+increase = sum(test_data[:]) - sum(model_predictions[:])
+increase = increase / sum(test_data[:])
+print("Percentage change {}".format(abs(increase * 100)))
+
+
+test_set_range = df[int(len(df)*0.9):].index
 plt.plot(test_set_range, model_predictions, color='blue', marker='o', linestyle='dashed',label='Predicted Price')
 plt.plot(test_set_range, test_data, color='red', label='Actual Price')
 plt.title('TESLA Prices Prediction')

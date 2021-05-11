@@ -120,7 +120,7 @@ def TrainModel(n_past, x_train, y_train):
     model.add(Dense(units=1, activation=None))
     model.compile(loss='mean_squared_error', optimizer = Adam(learning_rate=0.01))
 
-    history = model.fit(x_train, y_train, epochs = 30, batch_size = 32)
+    history = model.fit(x_train, y_train, epochs = 50, batch_size = 32)
 
     # plt.plot(history.history['loss'], label='train')
     # plt.legend()
@@ -324,7 +324,6 @@ def TestFullFile():
 
     del dataset['Adj Close']
 
-
     rowsToDrop = 0
     dataset.drop(dataset.tail(rowsToDrop).index,inplace=True) # drop last rowsToDrop rows
 
@@ -341,7 +340,7 @@ def TestFullFile():
     n_future_values = 0     # number of days in to predict in vector format
     n_past = 60              # number of days to look at in the past
     
-    n_day_to_predict = 378
+    n_day_to_predict = 100
 
     print("dataset shape {}".format(dataset.shape))
     # trainingDataLength = math.floor(len(dataset.iloc[:, 1:2])*0.9)
@@ -395,5 +394,5 @@ def TestFullFile():
 if __name__ == "__main__":
 
     # TrainAndTest()
-    TrainFullFile()
+    # TrainFullFile()
     TestFullFile()

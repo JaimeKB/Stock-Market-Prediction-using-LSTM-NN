@@ -250,7 +250,7 @@ def TestPrediction(dataset, trainingDataLength, n_past, n_future, n_future_value
     testYPoints = np.array(testPredict)
 
     for i in range(len(testXPoints)):
-        PlotData(testXPoints[i], testYPoints[i], "red", "Testing Data")
+        PlotData(testXPoints[i][0], testYPoints[i][0], "red", "Testing Data")
 
 
     # PlotData(testXPoints, testYPoints, "red", "Testing Data")

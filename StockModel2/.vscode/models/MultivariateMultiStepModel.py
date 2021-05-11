@@ -86,10 +86,10 @@ def MakeModel(n_past, x_train, y_train, n_future_values, layerOneHiddenUnits, la
     print("Model input shape {}, {}".format(n_past, x_train.shape[2]))
 
     model = Sequential()
-    model.add(LSTM(units=layerOneHiddenUnits, return_sequences=True, input_shape=(n_past, x_train.shape[2])))
-    model.add(Dropout(layerOneDropout))
-    model.add(LSTM(units=layerTwoHiddenUnits, return_sequences=False))
-    model.add(Dropout(layerTwoDropout))
+    model.add(LSTM(units=layerOneHiddenUnits, return_sequences=False, input_shape=(n_past, x_train.shape[2])))
+    model.add(Dropout(0))
+    # model.add(LSTM(units=layerTwoHiddenUnits, return_sequences=False))
+    # model.add(Dropout(layerTwoDropout))
     model.add(Dense(units=n_future_values, activation=None))
     model.compile(loss='mean_squared_error', optimizer = Adam(learning_rate=0.01))
 
@@ -262,14 +262,14 @@ if __name__ == "__main__":
     
     # Data range for number of days to train with, and number of days to predict forward
     n_future = 1            # days forward from last day in history data
-    n_future_values = 5     # number of days in to predict in vector format
-    n_past = 20             # number of days to look at in the past
+    n_future_values = 2     # number of days in to predict in vector format
+    n_past = 60             # number of days to look at in the past
     
     layerOneHiddenUnits = 100
-    layerTwoHiddenUnits = 50
+    layerTwoHiddenUnits = 75
     layerOneDropout = 0.2
     layerTwoDropout = 0.4
-    epochs = 5
+    epochs = 10
 
     testingData=pd.read_csv("C:/Users/Jaime Kershaw Brown/Documents/Final year project/TSLA.csv")
 
