@@ -79,6 +79,8 @@ Supervisor: David Walker
 
 [click here](http://ec2-54-201-179-80.us-west-2.compute.amazonaws.com:5000)
 
+[updated link](http://easysmartstocks.com:5000/)
+
  - View manual pages using below command, followed by the name of linux command
 
 	`man <INSERT NAME>`

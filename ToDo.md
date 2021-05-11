@@ -10,6 +10,15 @@
 
 ## Containerisation and orcarisation 
 
+- Resolve dependancy issues regarding application (mostly tensorflow)
+
+### Progress steps:
+
+- install docker with command `sudo apt-get install docker.io`
+- create docker file `nano Dockerfile`
+- build image `docker build -t stockmodeldocker .`
+- run image with `docker run stockmodeldocker`
+
 ## ~~SSH session management~~
 - Run as a service
 
