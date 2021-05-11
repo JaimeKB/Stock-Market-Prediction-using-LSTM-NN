@@ -7,32 +7,32 @@
 - Description of project
 - Architecture of system
 
-## Sign in/Sign up/Login
-
-## Uploaded files
-- Currently deleted
-- What happens if two users upload files at same time (race condition)
-
-## Logging/Logger
-- How to know when something has crashed or gone wrong
-
-## Monitoring
-
-## Implement reverse proxy
+## Containerisation and orcarisation 
 
 ## SSH session management
 - Run as a service
 
-## Containerisation and orcarisation 
+## Domain name
+
+## Implement reverse proxy
 
 ## SSL/HTTPS
 
 ## Which ports should be used
 - partially depends on SSL/HTTPS
 
-## Domain name
+## Logging/Logger
+- How to know when something has crashed or gone wrong
+
+## Uploaded files
+- Currently deleted
+- What happens if two users upload files at same time (race condition)
 
 ## Rate limiting
+
+## Monitoring
+
+## Sign in/Sign up/Login
 
 ## API
 - Expose for others to build on
