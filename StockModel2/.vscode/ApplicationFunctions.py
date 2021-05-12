@@ -95,7 +95,7 @@ def MultiStepFutureValues(dataset, sector):
     # Data range for number of days to train with, and number of days to predict forward
     n_future = 1            # days forward from last day in history data
     n_future_values = 5     # number of days in to predict in vector format
-    n_past = 20             # number of days to look at in the past
+    n_past = 60             # number of days to look at in the past
 
     # number of days to look at in the past
     n_day_to_predict = 1
