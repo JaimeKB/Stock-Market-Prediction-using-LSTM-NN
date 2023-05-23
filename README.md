@@ -5,7 +5,7 @@ There are two main sections, the research into developing the model, and the app
 
 The machine learning is developed using python, with Tensorflow as the core libary, and also acts as the back-end code for the application. Flask is the chosen API, connecting to Javascript, CSS and HTML for the front end. A list of libaries needed for the application can be found in the file requirements.txt
 
-My contact details: jaime.kershawbrown@students.plymouth.ac.uk
+My contact details: jaime.kershawbrown@gmail.com
 
 Supervisor: David Walker
 
